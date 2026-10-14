@@ -48,6 +48,4 @@ void LineWidgetData_HandleInput(LineWidgetData *data, int ch);
 
 void Widget_Form(WINDOW *win, FormWidgetData *data, int ch);
 
-void FormWidgetData_HandleInput(FormWidgetData *data, int ch);
-
 #endif

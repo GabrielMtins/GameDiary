@@ -14,6 +14,7 @@
 static void FormWidget_DrawClear(WINDOW *win, const FormWidgetData *data);
 static void FormWidget_DrawInput(WINDOW *win, FormWidgetData *data);
 static void FormWidget_DrawButton(WINDOW *win, const FormWidgetData *data);
+static void FormWidget_HandleInput(FormWidgetData *data, int ch);
 
 static void FormWidget_DrawClear(WINDOW *win, const FormWidgetData *data) {
 	wclear(win);
@@ -74,18 +75,7 @@ static void FormWidget_DrawButton(WINDOW *win, const FormWidgetData *data) {
 			);
 }
 
-void Widget_Form(WINDOW *win, FormWidgetData *data, int ch) {
-	if(ch == KEY_RESIZE) {
-		FormWidget_DrawClear(win, data);
-	}
-
-	FormWidgetData_HandleInput(data, ch);
-
-	FormWidget_DrawInput(win, data);
-	FormWidget_DrawButton(win, data);
-}
-
-void FormWidgetData_HandleInput(FormWidgetData *data, int ch) {
+static void FormWidget_HandleInput(FormWidgetData *data, int ch) {
 	if(ch == '\n' && data->input_selected == FORM_BUTTON_CANCEL) {
 		if(data->cancel_button_callback != NULL) {
 			data->cancel_button_callback(data->callback_args);
@@ -114,4 +104,15 @@ void FormWidgetData_HandleInput(FormWidgetData *data, int ch) {
 				ch
 				);
 	}
+}
+
+void Widget_Form(WINDOW *win, FormWidgetData *data, int ch) {
+	if(ch == KEY_RESIZE) {
+		FormWidget_DrawClear(win, data);
+	}
+
+	FormWidget_HandleInput(data, ch);
+
+	FormWidget_DrawInput(win, data);
+	FormWidget_DrawButton(win, data);
 }
