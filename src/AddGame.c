@@ -54,12 +54,9 @@ static void AddGame_DrawClear(App *app) {
 
 	{
 		wmove(win, 0, 0);
+		Widget_Label(win, "  Add game", -1);
 		Widget_Space(win, -1);
-		wmove(win, 0, 2);
-		Widget_Label(win, "Add game", -1);
 	}
-
-	wattrset(win, A_REVERSE);
 
 	for(int i = 0; i < ADD_GAME_NUM_INPUTS; i++) {
 		wmove(
@@ -93,13 +90,7 @@ static void AddGame_HandleInput(App *app, AddGameState *state) {
 		state->input_selected--;
 	}
 
-	if(state->input_selected < 0) {
-		state->input_selected = 0;
-	}
-
-	if(state->input_selected >= ADD_GAME_NUM_INPUTS + ADD_GAME_NUM_BUTTONS) {
-		state->input_selected = ADD_GAME_NUM_INPUTS + ADD_GAME_NUM_BUTTONS - 1;
-	}
+	LIMIT_VAR(state->input_selected, 0, ADD_GAME_NUM_INPUTS + ADD_GAME_NUM_BUTTONS);
 
 	if(state->input_selected < ADD_GAME_NUM_INPUTS) {
 		LineWidgetData_HandleInput(

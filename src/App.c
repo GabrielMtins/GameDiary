@@ -39,7 +39,7 @@ static void App_HandleResize(App *app) {
 static void App_UpdateState(App *app, int state) {
 	#define EXPAND_AS_CASE(type, state, update) case type: update(app); break;
 	switch(state) {
-		FOR_STATE_LIST_DO(EXPAND_AS_CASE)
+		FOR_STATE_LIST(EXPAND_AS_CASE)
 
 		default:
 			break;
@@ -59,6 +59,7 @@ static void App_BuildWindow(App *app) {
 }
 
 static void App_RefreshWindows(App *app) {
+	refresh();
 	wrefresh(app->content_window.win);
 	wrefresh(app->top_window.win);
 	wrefresh(app->bottom_window.win);
@@ -98,7 +99,7 @@ void App_Init(App *app) {
 	set_escdelay(25);
 
 	#define EXPAND_AS_MALLOC(type, state, update) app->states[type] = calloc(1, sizeof(state));
-	FOR_STATE_LIST_DO(EXPAND_AS_MALLOC)
+	FOR_STATE_LIST(EXPAND_AS_MALLOC)
 	#undef EXPAND_AS_MALLOC
 
 	app->quit = 0;
@@ -143,6 +144,10 @@ void App_ClearBottomWindow(App *app) {
 	wattrset(win, A_REVERSE);
 
 	Widget_Space(win, -1);
+}
+
+bool App_IsNewState(App *app) {
+	return app->prev_state != app->current_state;
 }
 
 void Logo_Update(App *app) {

@@ -10,11 +10,13 @@
 
 #define KEY_ESCAPE 27
 
-#define FOR_STATE_LIST_DO(DO) \
+#define FOR_STATE_LIST(DO) \
 	DO(STATE_CATALOG, CatalogState, Catalog_Update) \
 	DO(STATE_MENUBAR, MenubarState, Menubar_Update) \
 	DO(STATE_ADDGAME, AddGameState, AddGame_Update) \
 	DO(STATE_LOGO,    int,          Logo_Update)
+
+#define LIMIT_VAR(x, min_x, max_x) (x = (x < (min_x)) ? (min_x) : ((x >= (max_x)) ? (max_x - 1) : x))
 
 typedef struct CatalogState {
 	Table working_table;
@@ -46,15 +48,17 @@ void App_End(App *app);
 
 void App_ClearBottomWindow(App *app);
 
+bool App_IsNewState(App *app);
+
 /* ============= MACROS EXPANDING ============= */
 
 #define EXPAND_AS_FUNCTION(type, state, update) void update(App *app);
-FOR_STATE_LIST_DO(EXPAND_AS_FUNCTION)
+FOR_STATE_LIST(EXPAND_AS_FUNCTION)
 #undef EXPAND_AS_FUNCTION
 
 #define EXPAND_AS_ENUM(type, ...) type,
 typedef enum {
-	FOR_STATE_LIST_DO(EXPAND_AS_ENUM)
+	FOR_STATE_LIST(EXPAND_AS_ENUM)
 	NUM_STATES,
 	STATE_NONE
 } StateType;

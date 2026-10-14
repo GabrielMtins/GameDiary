@@ -10,8 +10,28 @@ static const char *button_labels[] = {
 	" Stats",
 };
 
-static void Menubar_Draw(App *app) {
-	MenubarState *state = (MenubarState *) app->states[STATE_MENUBAR];
+static void Menubar_HandleInput(App *app, MenubarState *state);
+static void Menubar_Draw(App *app, MenubarState *state);
+
+static void Menubar_HandleInput(App *app, MenubarState *state) {
+	if(app->ch == 'k') {
+		state->button_selected++;
+	}
+
+	if(app->ch == 'j') {
+		state->button_selected--;
+	}
+
+	if(state->button_selected < 0) {
+		state->button_selected = 0;
+	} 
+
+	if(state->button_selected >= NUM_BUTTONS) {
+		state->button_selected = NUM_BUTTONS - 1;
+	}
+}
+
+static void Menubar_Draw(App *app, MenubarState *state) {
 	WINDOW *win = app->top_window.win;
 
 	wmove(win, 0, 0);
@@ -34,21 +54,6 @@ static void Menubar_Draw(App *app) {
 void Menubar_Update(App *app) {
 	MenubarState *state = (MenubarState *) app->states[STATE_MENUBAR];
 
-	if(app->ch == 'k') {
-		state->button_selected++;
-	}
-
-	if(app->ch == 'j') {
-		state->button_selected--;
-	}
-
-	if(state->button_selected < 0) {
-		state->button_selected = 0;
-	} 
-
-	if(state->button_selected >= NUM_BUTTONS) {
-		state->button_selected = NUM_BUTTONS - 1;
-	}
-
-	Menubar_Draw(app);
+	Menubar_HandleInput(app, state);
+	Menubar_Draw(app, state);
 }

@@ -54,6 +54,7 @@ static void Catalog_DrawTable(App *app, CatalogState *state) {
 		int current_row = (line - 1) + state->start_row;
 
 		if(current_row >= state->working_table.nrow) {
+			wmove(win, line, 0);
 			wattrset(win, A_NORMAL);
 			Widget_Space(win, -1);
 			continue;
@@ -98,13 +99,7 @@ static void Catalog_HandleInputNav(App *app, CatalogState *state) {
 	}
 	*/
 
-	if(state->row_selected < 1) {
-		state->row_selected = 1;
-	}
-
-	if(state->row_selected >= state->working_table.nrow) {
-		state->row_selected = state->working_table.nrow - 1;
-	}
+	LIMIT_VAR(state->row_selected, 1, state->working_table.nrow);
 
 	if(app->ch == 'd' && state->working_table.nrow > 1) {
 		state->input_state = CATALOG_INPUT_DELETE_CONFIRM;
@@ -176,15 +171,17 @@ static void Catalog_HandleDelete(App *app, CatalogState *state) {
 void Catalog_Update(App *app) {
 	CatalogState *state = app->states[STATE_CATALOG];
 
-	if(app->prev_state != STATE_CATALOG) {
+	if(app->ch == KEY_RESIZE) {
+		Catalog_DrawClear(app, state);
+	}
+
+	if(App_IsNewState(app)) {
 		Catalog_UpdateTable(app, state);
 		Catalog_DrawClear(app, state);
 
 		app->content_window.owner_state = STATE_CATALOG;
-
-		state->row_selected = 1;
-
 		state->input_state = CATALOG_INPUT_NAV;
+		state->row_selected = 1;
 	}
 
 	Catalog_HandleInput(app, state);
