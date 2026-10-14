@@ -5,21 +5,24 @@ static void Catalog_PrintTable(App *app);
 static void Catalog_PrintTable(App *app) {
 	CatalogState *state = app->states[STATE_CATALOG];
 
-	wattrset(app->content_window.win, A_REVERSE | A_DIM);
+	wattrset(app->content_window.win, A_REVERSE);
+
 	Table_PrintRowOnWindow(
 			&app->content_window,
 			&state->working_table,
 			0,
 			0
 			);
+
 	state->start_row = 1;
 
 	for(int i = state->start_row; i < state->working_table.row + 1; i++) {
 		if(i == state->row_selected) {
-			wattrset(app->content_window.win, A_REVERSE);
+			wattrset(app->content_window.win, A_REVERSE | A_BOLD);
 		} else{
 			wattrset(app->content_window.win, A_NORMAL);
 		}
+
 		Table_PrintRowOnWindow(
 				&app->content_window,
 				&state->working_table,

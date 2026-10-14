@@ -1,12 +1,13 @@
 #include "App.h"
 #include "Draw.h"
+#include "Widgets.h"
 
 #define NUM_BUTTONS 3
 
 static const char *button_labels[] = {
-	"Games",
-	"Diary",
-	"Stats",
+	" Games",
+	" Diary",
+	" Stats",
 };
 
 static void Menubar_Draw(App *app) {
@@ -15,24 +16,18 @@ static void Menubar_Draw(App *app) {
 
 	wmove(win, 0, 0);
 	wattrset(win, A_NORMAL);
-	waddch(win, ' ');
-	waddch(win, ' ');
+	Widget_Space(win, 2);
 
 	for(int i = 0; i < NUM_BUTTONS; i++) {
-		if(i == state->button_selected) {
-			wattrset(win, A_REVERSE);
-		} else {
-			wattrset(win, A_REVERSE | A_DIM);
-		}
-
-		waddch(win, ' ');
-		waddch(win, ' ');
-		wprintbynumch(win, button_labels[i], 10);
-		waddch(win, ' ');
+		Widget_Button(
+				win,
+				button_labels[i],
+				10,
+				state->button_selected == i
+				);
 
 		wattrset(win, A_NORMAL);
-		waddch(win, ' ');
-		waddch(win, ' ');
+		Widget_Space(win, 2);
 	}
 }
 

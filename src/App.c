@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 static void App_InitDb(App *app) {
 	sqlite3_open("data.db", &app->db);
@@ -52,9 +53,13 @@ static void App_Loop(App *app) {
 	wrefresh(app->bottom_window.win);
 
 	app->ch = getch();
+
+	app->prev_state = app->current_state;
+	app->current_state = app->next_state;
 }
 
 void App_Init(App *app) {
+	memset(app, 0, sizeof(App));
 	App_InitDb(app);
 
 	initscr();
@@ -71,7 +76,10 @@ void App_Init(App *app) {
 
 	app->quit = 0;
 	app->ch = 0;
+
+	app->prev_state = STATE_NONE;
 	app->current_state = STATE_START;
+	app->next_state = STATE_START;
 }
 
 void App_BuildWindow(App *app) {
@@ -109,7 +117,7 @@ void StartState_Update(App *app) {
 			get_game_table_cmd
 			);
 
-	app->current_state = STATE_CATALOG;
+	app->next_state = STATE_ADDGAME;
 	Menubar_Update(app);
 	Catalog_Update(app);
 }

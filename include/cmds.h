@@ -18,7 +18,8 @@ const char *create_tables_cmd =
 ;
 
 const char *insert_game_cmd = 
-"INSERT INTO GameTable (Name, Genres, Platform, Year) VALUES (\'%s\', \'%s\', \'%s\', \'%d\');";
+"INSERT INTO GameTable (Name, Genres, Platform, Year) VALUES (\'%s\', \'%s\', \'%s\', \'%d\');"
+;
 
 const char *get_game_table_cmd = 
 "SELECT * FROM GameTable;"

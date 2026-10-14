@@ -3,12 +3,14 @@
 
 #include "Window.h"
 #include "Table.h"
+#include "Widgets.h"
 #include <sqlite3.h>
 
 #define FOR_STATE_LIST_DO(DO) \
 	DO(STATE_START,   int,         StartState_Update) \
 	DO(STATE_CATALOG, CatalogState, Catalog_Update) \
-	DO(STATE_MENUBAR, MenubarState, Menubar_Update)
+	DO(STATE_MENUBAR, MenubarState, Menubar_Update) \
+	DO(STATE_ADDGAME, AddGameState, AddGame_Update)
 
 typedef struct CatalogState {
 	Table working_table;
@@ -20,6 +22,13 @@ typedef struct CatalogState {
 typedef struct MenubarState {
 	int button_selected;
 } MenubarState;
+
+#define ADD_GAME_NUM_INPUTS 4
+typedef struct AddGameState {
+	LineWidgetData inputs[ADD_GAME_NUM_INPUTS];
+
+	int input_selected;
+} AddGameState;
 
 typedef struct App App;
 
@@ -54,7 +63,9 @@ struct App {
 
 	sqlite3 *db;
 
+	StateType prev_state;
 	StateType current_state;
+	StateType next_state;
 
 	int quit;
 	int ch;
