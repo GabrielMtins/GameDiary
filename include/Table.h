@@ -6,7 +6,7 @@
 
 typedef struct Table {
 	char **str;
-	int col, row;
+	int ncol, nrow;
 } Table;
 
 void Table_GetSqlTable(Table *table, sqlite3 *db, const char *cmd);

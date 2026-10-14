@@ -9,6 +9,7 @@
 static void App_InitDb(App *app);
 static void App_HandleResize(App *app);
 static void App_UpdateState(App *app, int state);
+static void App_RefreshWindows(App *app);
 static void App_Loop(App *app);
 
 static void App_InitDb(App *app) {
@@ -60,23 +61,30 @@ static void App_UpdateState(App *app, int state) {
 	#undef EXPAND_AS_CASE
 }
 
-static void App_Loop(App *app) {
-	refresh();
-
-	App_UpdateState(app, app->current_state);
-
+static void App_RefreshWindows(App *app) {
 	wrefresh(app->content_window.win);
 	wrefresh(app->top_window.win);
 	wrefresh(app->bottom_window.win);
+}
 
-	app->ch = getch();
-
+static void App_Loop(App *app) {
 	if(app->ch == KEY_RESIZE) {
 		App_HandleResize(app);
 	}
 
+	App_UpdateState(app, app->current_state);
+	App_RefreshWindows(app);
+
 	app->prev_state = app->current_state;
 	app->current_state = app->next_state;
+
+	if(app->prev_state != app->current_state) {
+		app->ch = 0;
+		App_UpdateState(app, app->current_state);
+		App_RefreshWindows(app);
+	}
+
+	app->ch = getch();
 }
 
 void App_Init(App *app) {
@@ -88,6 +96,8 @@ void App_Init(App *app) {
 	noecho();
 
 	keypad(stdscr, TRUE);
+
+	set_escdelay(25);
 
 	#define EXPAND_AS_MALLOC(type, state, update) app->states[type] = malloc(sizeof(state));
 	FOR_STATE_LIST_DO(EXPAND_AS_MALLOC)
@@ -105,6 +115,7 @@ void App_Init(App *app) {
 	app->bottom_window.owner_state = STATE_NONE;
 
 	App_HandleResize(app);
+	refresh();
 }
 
 void App_BuildWindow(App *app) {

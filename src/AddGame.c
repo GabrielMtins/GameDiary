@@ -10,6 +10,9 @@
 
 #define ADD_GAME_NUM_BUTTONS 2
 
+#define ADD_GAME_BUTTON_CANCEL (ADD_GAME_NUM_INPUTS + 0)
+#define ADD_GAME_BUTTON_OK (ADD_GAME_NUM_INPUTS + 1)
+
 #define game_label_start(i) GAME_LABEL_START_Y + i * 2, GAME_LABEL_START_X
 #define game_label_end(i)   GAME_LABEL_START_Y + i * 2, GAME_LABEL_END_X
 
@@ -30,8 +33,6 @@ static void AddGame_Start(App *app, AddGameState *state) {
 	AddGame_DrawClear(app);
 
 	for(int i = 0; i < ADD_GAME_NUM_INPUTS; i++) {
-		state->inputs[i].cursor_pos = 0;
-		state->inputs[i].len = 0;
 		state->inputs[i].width = app->content_window.width - GAME_LABEL_END_X - 2;
 		state->inputs[i].bg_attron = A_REVERSE | A_DIM;
 		state->inputs[i].cursor_attron = A_REVERSE | A_BOLD;
@@ -49,7 +50,7 @@ static void AddGame_DrawClear(App *app) {
 		wmove(win, 0, 0);
 		Widget_Space(win, -1);
 		wmove(win, 0, 2);
-		Widget_Label(win, "Add Game", -1);
+		Widget_Label(win, "Add game", -1);
 	}
 
 	wattrset(win, A_REVERSE);
@@ -65,7 +66,11 @@ static void AddGame_DrawClear(App *app) {
 }
 
 static void AddGame_HandleInput(App *app, AddGameState *state) {
-	if(app->ch == '\n' && state->input_selected == ADD_GAME_NUM_INPUTS) {
+	if(app->ch == '\n' && state->input_selected == ADD_GAME_BUTTON_CANCEL) {
+		app->next_state = STATE_CATALOG;
+	}
+
+	if(app->ch == KEY_ESCAPE) {
 		app->next_state = STATE_CATALOG;
 	}
 
@@ -134,7 +139,7 @@ static void AddGame_DrawButton(App *app, AddGameState *state) {
 
 	Widget_Button(
 			win,
-			" Add Game ",
+			"    OK    ",
 			-1,
 			state->input_selected == (ADD_GAME_NUM_INPUTS + 1)
 			);
@@ -145,9 +150,12 @@ void AddGame_Update(App *app) {
 
 	if(app->prev_state != STATE_ADDGAME || app->ch == KEY_RESIZE) {
 		AddGame_Start(app, state);
+
+		app->content_window.owner_state = STATE_ADDGAME;
 	}
 
 	AddGame_HandleInput(app, state);
+
 	AddGame_DrawInput(app, state);
 	AddGame_DrawButton(app, state);
 }

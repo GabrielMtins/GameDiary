@@ -12,10 +12,12 @@ void Table_GetSqlTable(Table *table, sqlite3 *db, const char *cmd) {
 			db,
 			cmd,
 			&table->str,
-			&table->row,
-			&table->col,
+			&table->nrow,
+			&table->ncol,
 			NULL
 			);
+
+	table->nrow++;
 }
 
 void Table_Destroy(Table *table) {
@@ -24,13 +26,13 @@ void Table_Destroy(Table *table) {
 
 void Table_PrintRowOnWindow(Window *window, Table *table, int window_y, int table_row) {
 	const int num_characters_to_print =
-		(window->width - 1 - 3 * table->col) / table->col;
+		(window->width - 1 - 3 * table->ncol) / table->ncol;
 
-	for(int i = 0; i < table->col; i++) {
+	for(int i = 0; i < table->ncol; i++) {
 		wmove(window->win, window_y, i * (num_characters_to_print + 3));
 		waddch(window->win, '|');
 		waddch(window->win, ' ');
-		wprintbynumch(window->win, table->str[table_row * table->col + i], num_characters_to_print);
+		wprintbynumch(window->win, table->str[table_row * table->ncol + i], num_characters_to_print);
 		waddch(window->win, ' ');
 	}
 

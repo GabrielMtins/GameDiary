@@ -6,6 +6,8 @@
 #include "Widgets.h"
 #include <sqlite3.h>
 
+#define KEY_ESCAPE 27
+
 #define FOR_STATE_LIST_DO(DO) \
 	DO(STATE_CATALOG, CatalogState, Catalog_Update) \
 	DO(STATE_MENUBAR, MenubarState, Menubar_Update) \
