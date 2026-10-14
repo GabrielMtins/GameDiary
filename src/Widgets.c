@@ -6,15 +6,7 @@
 
 void Widget_Space(WINDOW *win, int width) {
 	if(width == -1) {
-		int startx, starty, endx, endy;
-
-		getyx(win, starty, startx);
-		getmaxyx(win, endy, endx);
-
-		width = endx - startx;
-
-		(void) starty;
-		(void) endy;
+		width = getmaxx(win) - getcurx(win);
 	}
 
 	for(int i = 0; i < width; i++) {

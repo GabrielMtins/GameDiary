@@ -18,7 +18,7 @@ static const char *sql_cmd_create_tables =
 ;
 
 static const char *sql_cmd_insert_game = 
-"INSERT INTO GameTable (Name, Genres, Platform, Year) VALUES (\'%s\', \'%s\', \'%s\', \'%s\');"
+"INSERT INTO GameTable (Name, Genre, Platform, Year) VALUES (\'%s\', \'%s\', \'%s\', \'%s\');"
 ;
 
 static const char *sql_cmd_delete_game =
@@ -26,7 +26,7 @@ static const char *sql_cmd_delete_game =
 ;
 
 static const char *sql_cmd_get_game_table = 
-"SELECT * FROM GameTable;"
+"SELECT * FROM GameTable ORDER BY Name ASC;"
 ;
 
 #endif

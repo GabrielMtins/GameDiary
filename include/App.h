@@ -6,18 +6,23 @@
 #include "Widgets.h"
 #include <sqlite3.h>
 
+#include <stdlib.h>
+
 #define KEY_ESCAPE 27
 
 #define FOR_STATE_LIST_DO(DO) \
 	DO(STATE_CATALOG, CatalogState, Catalog_Update) \
 	DO(STATE_MENUBAR, MenubarState, Menubar_Update) \
-	DO(STATE_ADDGAME, AddGameState, AddGame_Update)
+	DO(STATE_ADDGAME, AddGameState, AddGame_Update) \
+	DO(STATE_LOGO,    int,          Logo_Update)
 
 typedef struct CatalogState {
 	Table working_table;
 
 	int start_row;
 	int row_selected;
+
+	int input_state;
 } CatalogState;
 
 typedef struct MenubarState {
@@ -35,11 +40,11 @@ typedef struct App App;
 
 void App_Init(App *app);
 
-void App_BuildWindow(App *app);
-
 void App_Run(App *app);
 
 void App_End(App *app);
+
+void App_ClearBottomWindow(App *app);
 
 /* ============= MACROS EXPANDING ============= */
 
@@ -59,6 +64,7 @@ struct App {
 	Window content_window;
 	Window top_window;
 	Window bottom_window;
+	Window logo_window;
 
 	void *states[NUM_STATES];
 

@@ -25,20 +25,23 @@ static const char *labels[] = {
 	" Year:"
 };
 
-static void AddGame_Start(App *app, AddGameState *state);
+static void AddGame_ResetInput(App *app, AddGameState *state);
 static void AddGame_DrawClear(App *app);
 static void AddGame_HandleInput(App *app, AddGameState *state);
 static void AddGame_DrawInput(App *app, AddGameState *state);
 static void AddGame_DrawButton(App *app, AddGameState *state);
 static void AddGame_HandleAddQuery(App *app, AddGameState *state);
 
-static void AddGame_Start(App *app, AddGameState *state) {
+static void AddGame_ResetInput(App *app, AddGameState *state) {
 	AddGame_DrawClear(app);
+
+	state->input_selected = 0;
 
 	for(int i = 0; i < ADD_GAME_NUM_INPUTS; i++) {
 		state->inputs[i].width = app->content_window.width - GAME_LABEL_END_X - 2;
-		state->inputs[i].bg_attron = A_REVERSE | A_DIM;
-		state->inputs[i].cursor_attron = A_REVERSE | A_BOLD;
+		state->inputs[i].len = 0;
+		state->inputs[i].cursor_pos = 0;
+		state->inputs[i].bg_attron = A_DIM | A_REVERSE;
 	}
 }
 
@@ -117,6 +120,8 @@ static void AddGame_DrawInput(App *app, AddGameState *state) {
 				game_label_end(i)
 			 );
 
+		state->inputs[i].width = app->content_window.width - GAME_LABEL_END_X - 2;
+
 		if(i == state->input_selected) {
 			state->inputs[i].cursor_attron = A_BOLD | A_REVERSE;
 		} else {
@@ -193,8 +198,12 @@ static void AddGame_HandleAddQuery(App *app, AddGameState *state) {
 void AddGame_Update(App *app) {
 	AddGameState *state = (AddGameState *) app->states[STATE_ADDGAME];
 
-	if(app->prev_state != STATE_ADDGAME || app->ch == KEY_RESIZE) {
-		AddGame_Start(app, state);
+	if(app->ch == KEY_RESIZE) {
+		AddGame_DrawClear(app);
+	}
+
+	if(app->prev_state != STATE_ADDGAME) {
+		AddGame_ResetInput(app, state);
 
 		app->content_window.owner_state = STATE_ADDGAME;
 	}
