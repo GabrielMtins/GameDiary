@@ -1,5 +1,5 @@
 #include "App.h"
-#include "cmds.h"
+#include "SqlCmds.h"
 
 static void Catalog_DrawClear(App *app, CatalogState *state);
 static void Catalog_DrawTable(App *app, CatalogState *state);
@@ -76,7 +76,7 @@ void Catalog_Update(App *app) {
 		Table_GetSqlTable(
 				&state->working_table,
 				app->db,
-				get_game_table_cmd
+				sql_cmd_get_game_table
 				);
 		
 		Catalog_DrawClear(app, state);

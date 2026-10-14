@@ -1,6 +1,6 @@
 #include "App.h"
 
-#include "cmds.h"
+#include "SqlCmds.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,21 +17,11 @@ static void App_InitDb(App *app) {
 
 	sqlite3_exec(
 			app->db,
-			create_tables_cmd,
+			sql_cmd_create_tables,
 			NULL,
 			NULL,
 			NULL
 			);
-
-	/*
-	sqlite3_exec(
-			app->db,
-			"INSERT INTO GameTable (Name, Genres, Platform, Year) VALUES ('Super Mario World', 'Platform', 'SNES', '1991');",
-			NULL,
-			NULL,
-			NULL
-			);
-			*/
 
 	/*
 	Table_GetSqlTable(
@@ -142,4 +132,6 @@ void App_End(App *app) {
 	Window_Destroy(&app->content_window);
 
 	endwin();
+
+	sqlite3_close(app->db);
 }

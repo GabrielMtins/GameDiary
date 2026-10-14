@@ -1,5 +1,7 @@
 #include "App.h"
+#include "SqlCmds.h"
 
+#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -28,6 +30,7 @@ static void AddGame_DrawClear(App *app);
 static void AddGame_HandleInput(App *app, AddGameState *state);
 static void AddGame_DrawInput(App *app, AddGameState *state);
 static void AddGame_DrawButton(App *app, AddGameState *state);
+static void AddGame_HandleAddQuery(App *app, AddGameState *state);
 
 static void AddGame_Start(App *app, AddGameState *state) {
 	AddGame_DrawClear(app);
@@ -70,15 +73,20 @@ static void AddGame_HandleInput(App *app, AddGameState *state) {
 		app->next_state = STATE_CATALOG;
 	}
 
+	if(app->ch == '\n' && state->input_selected == ADD_GAME_BUTTON_OK) {
+		AddGame_HandleAddQuery(app, state);
+		app->next_state = STATE_CATALOG;
+	}
+
 	if(app->ch == KEY_ESCAPE) {
 		app->next_state = STATE_CATALOG;
 	}
 
-	if(app->ch == KEY_DOWN || app->ch == '\n' || app->ch == '\t' || app->ch == KEY_RIGHT) {
+	if(app->ch == KEY_DOWN || app->ch == '\n' || app->ch == '\t') {
 		state->input_selected++;
 	}
 
-	if(app->ch == KEY_UP || app->ch == KEY_BTAB || app->ch == KEY_LEFT) {
+	if(app->ch == KEY_UP || app->ch == KEY_BTAB) {
 		state->input_selected--;
 	}
 
@@ -143,6 +151,43 @@ static void AddGame_DrawButton(App *app, AddGameState *state) {
 			-1,
 			state->input_selected == (ADD_GAME_NUM_INPUTS + 1)
 			);
+}
+
+static void AddGame_HandleAddQuery(App *app, AddGameState *state) {
+	char *cmd = NULL;
+	int len;
+
+	for(int i = 0; i < ADD_GAME_NUM_INPUTS; i++) {
+		LineWidgetData *input = &state->inputs[i];
+
+		input->str[input->len] = '\0';
+	}
+
+	len = snprintf(cmd, 0, sql_cmd_insert_game,
+			state->inputs[0].str,
+			state->inputs[1].str,
+			state->inputs[2].str,
+			state->inputs[3].str
+			) + 1;
+
+	cmd = (char *) malloc(len);
+
+	snprintf(cmd, len, sql_cmd_insert_game,
+			state->inputs[0].str,
+			state->inputs[1].str,
+			state->inputs[2].str,
+			state->inputs[3].str
+			);
+
+	sqlite3_exec(
+			app->db,
+			cmd,
+			NULL,
+			NULL,
+			NULL
+			);
+
+	free(cmd);
 }
 
 void AddGame_Update(App *app) {
