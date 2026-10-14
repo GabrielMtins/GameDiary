@@ -3,6 +3,10 @@
 #include <string.h>
 
 void Window_Create(Window *window, int x, int y, int width, int height) {
+	if(window->win != NULL) {
+		Window_Destroy(window);
+	}
+
 	window->width = width;
 	window->height = height;
 

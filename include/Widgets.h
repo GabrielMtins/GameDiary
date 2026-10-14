@@ -10,10 +10,11 @@ typedef struct {
 	int len;
 
 	int offset;
-	int cursor;
+	int cursor_pos;
 	int width;
 
-	bool draw_cursor;
+	int bg_attron;
+	int cursor_attron;
 } LineWidgetData;
 
 /* Se width = -1, preencher até o final da linha. */

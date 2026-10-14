@@ -56,6 +56,12 @@ static void App_Loop(App *app) {
 
 	app->prev_state = app->current_state;
 	app->current_state = app->next_state;
+
+	/*
+	if(app->ch == KEY_RESIZE) {
+		App_BuildWindow(app);
+	}
+	*/
 }
 
 void App_Init(App *app) {

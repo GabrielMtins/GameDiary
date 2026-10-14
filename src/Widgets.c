@@ -42,22 +42,24 @@ void Widget_InputLine(WINDOW *win, const LineWidgetData *data) {
 	int count;
 
 	for(int i = data->offset; i < data->len; i++) {
+		wattrset(win, (i == data->cursor_pos) ? data->cursor_attron : data->bg_attron);
+
 		if(i - data->offset >= data->width) {
 			return;
-		}
-
-		if(i == data->cursor) {
-			wattron(win, A_UNDERLINE | A_BOLD);
-		} else {
-			wattroff(win, A_UNDERLINE | A_BOLD);
 		}
 
 		waddch(win, data->str[i]);
 	}
 
-	wattroff(win, A_UNDERLINE | A_BOLD);
-
 	count = data->len - data->offset;
+
+	if(data->cursor_pos >= data->len) {
+		wattrset(win, data->cursor_attron);
+		waddch(win, ' ');
+		count++;
+	}
+
+	wattrset(win, data->bg_attron);
 
 	for(; count < data->width; count++) {
 		waddch(win, ' ');
@@ -66,41 +68,41 @@ void Widget_InputLine(WINDOW *win, const LineWidgetData *data) {
 
 void LineWidgetData_HandleInput(LineWidgetData *data, int ch) {
 	if(isprint(ch)) {
-		data->str[data->cursor] = (char) ch;
+		data->len++;
 
-		if(data->cursor == data->len) {
-			data->len++;
+		for(int i = data->len - 1; i >= data->cursor_pos + 1; i--) {
+			data->str[i] = data->str[i - 1];
 		}
 
-		data->cursor++;
+		data->str[data->cursor_pos] = (char) ch;
+
+		data->cursor_pos++;
 	}
 
 	if(ch == KEY_LEFT) {
-		data->cursor--;
+		data->cursor_pos--;
 	}
 	if(ch == KEY_RIGHT) {
-		data->cursor++;
+		data->cursor_pos++;
 	}
 
-	if(ch == KEY_BACKSPACE && data->len > 0) {
-		for(int i = data->cursor; i < data->len - 1; i++) {
+	if(ch == KEY_BACKSPACE && data->len > 0 && data->cursor_pos > 0) {
+		for(int i = data->cursor_pos - 1; i < data->len - 1; i++) {
 			data->str[i] = data->str[i + 1];
 		}
 
 		data->len--;
-		data->cursor--;
+		data->cursor_pos--;
 	}
 
-	if(data->cursor > data->len) data->cursor = data->len;
-	if(data->cursor < 0) data->cursor = 0;
+	if(data->cursor_pos > data->len) data->cursor_pos = data->len;
+	if(data->cursor_pos < 0) data->cursor_pos = 0;
 
-	if(data->cursor < data->offset) {
-		data->offset = data->cursor;
+	if(data->cursor_pos < data->offset) {
+		data->offset = data->cursor_pos;
 	}
 
-	/*
-	if(data->cursor >= data->offset + data->width) {
-		data->offset = data->cursor - data->width + 1;
+	if(data->cursor_pos >= data->offset + data->width) {
+		data->offset = data->cursor_pos - data->width + 1;
 	}
-	*/
 }
