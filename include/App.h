@@ -14,6 +14,7 @@
 	DO(STATE_CATALOG, CatalogState, Catalog_Update) \
 	DO(STATE_MENUBAR, MenubarState, Menubar_Update) \
 	DO(STATE_ADDGAME, AddGameState, AddGame_Update) \
+	DO(STATE_ADDLOG,  AddLogState,  AddLog_Update ) \
 	DO(STATE_LOGO,    int,          Logo_Update)
 
 #define LIMIT_VAR(x, min_x, max_x) (x = (x < (min_x)) ? (min_x) : ((x >= (max_x)) ? (max_x - 1) : x))
@@ -37,6 +38,13 @@ typedef struct AddGameState {
 
 	int input_selected;
 } AddGameState;
+
+#define ADD_LOG_NUM_INPUTS 3
+typedef struct AddLogState {
+	LineWidgetData inputs[ADD_LOG_NUM_INPUTS];
+
+	int input_selected;
+} AddLogState;
 
 typedef struct App App;
 
