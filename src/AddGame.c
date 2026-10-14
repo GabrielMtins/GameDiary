@@ -8,6 +8,8 @@
 #define GAME_LABEL_SIZE 11
 #define GAME_LABEL_END_X (GAME_LABEL_START_X + GAME_LABEL_SIZE)
 
+#define ADD_GAME_NUM_BUTTONS 2
+
 #define game_label_start(i) GAME_LABEL_START_Y + i * 2, GAME_LABEL_START_X
 #define game_label_end(i)   GAME_LABEL_START_Y + i * 2, GAME_LABEL_END_X
 
@@ -21,6 +23,8 @@ static const char *labels[] = {
 static void AddGame_Start(App *app, AddGameState *state);
 static void AddGame_DrawClear(App *app);
 static void AddGame_HandleInput(App *app, AddGameState *state);
+static void AddGame_DrawInput(App *app, AddGameState *state);
+static void AddGame_DrawButton(App *app, AddGameState *state);
 
 static void AddGame_Start(App *app, AddGameState *state) {
 	AddGame_DrawClear(app);
@@ -37,9 +41,7 @@ static void AddGame_Start(App *app, AddGameState *state) {
 static void AddGame_DrawClear(App *app) {
 	WINDOW *win = app->content_window.win;
 
-	//wbkgdset(win, ' ' | A_REVERSE | A_DIM);
 	wclear(win);
-	//wbkgdset(win, ' ');
 
 	wattrset(win, A_REVERSE);
 
@@ -63,11 +65,15 @@ static void AddGame_DrawClear(App *app) {
 }
 
 static void AddGame_HandleInput(App *app, AddGameState *state) {
-	if(app->ch == KEY_DOWN || app->ch == '\n' || app->ch == '\t') {
+	if(app->ch == '\n' && state->input_selected == ADD_GAME_NUM_INPUTS) {
+		app->next_state = STATE_CATALOG;
+	}
+
+	if(app->ch == KEY_DOWN || app->ch == '\n' || app->ch == '\t' || app->ch == KEY_RIGHT) {
 		state->input_selected++;
 	}
 
-	if(app->ch == KEY_UP || app->ch == KEY_BTAB) {
+	if(app->ch == KEY_UP || app->ch == KEY_BTAB || app->ch == KEY_LEFT) {
 		state->input_selected--;
 	}
 
@@ -75,14 +81,16 @@ static void AddGame_HandleInput(App *app, AddGameState *state) {
 		state->input_selected = 0;
 	}
 
-	if(state->input_selected >= ADD_GAME_NUM_INPUTS) {
-		state->input_selected = ADD_GAME_NUM_INPUTS - 1;
+	if(state->input_selected >= ADD_GAME_NUM_INPUTS + ADD_GAME_NUM_BUTTONS) {
+		state->input_selected = ADD_GAME_NUM_INPUTS + ADD_GAME_NUM_BUTTONS - 1;
 	}
 
-	LineWidgetData_HandleInput(
-			&state->inputs[state->input_selected],
-			app->ch
-			);
+	if(state->input_selected < ADD_GAME_NUM_INPUTS) {
+		LineWidgetData_HandleInput(
+				&state->inputs[state->input_selected],
+				app->ch
+				);
+	}
 }
 
 static void AddGame_DrawInput(App *app, AddGameState *state) {
@@ -106,13 +114,40 @@ static void AddGame_DrawInput(App *app, AddGameState *state) {
 	}
 }
 
+static void AddGame_DrawButton(App *app, AddGameState *state) {
+	WINDOW *win = app->content_window.win;
+
+	static const int button_padding = 5;
+	static const int button_width = 10;
+	const int middle_screen = app->content_window.width / 2;
+
+	wmove(win, 10, middle_screen - button_padding - button_width);
+
+	Widget_Button(
+			win,
+			"  Cancel  ",
+			-1,
+			state->input_selected == (ADD_GAME_NUM_INPUTS)
+			);
+
+	wmove(win, 10, middle_screen + button_padding);
+
+	Widget_Button(
+			win,
+			" Add Game ",
+			-1,
+			state->input_selected == (ADD_GAME_NUM_INPUTS + 1)
+			);
+}
+
 void AddGame_Update(App *app) {
 	AddGameState *state = (AddGameState *) app->states[STATE_ADDGAME];
 
-	if(app->prev_state != STATE_ADDGAME) {
+	if(app->prev_state != STATE_ADDGAME || app->ch == KEY_RESIZE) {
 		AddGame_Start(app, state);
 	}
 
 	AddGame_HandleInput(app, state);
 	AddGame_DrawInput(app, state);
+	AddGame_DrawButton(app, state);
 }

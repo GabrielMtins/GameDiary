@@ -7,7 +7,6 @@
 #include <sqlite3.h>
 
 #define FOR_STATE_LIST_DO(DO) \
-	DO(STATE_START,   int,         StartState_Update) \
 	DO(STATE_CATALOG, CatalogState, Catalog_Update) \
 	DO(STATE_MENUBAR, MenubarState, Menubar_Update) \
 	DO(STATE_ADDGAME, AddGameState, AddGame_Update)
@@ -63,9 +62,9 @@ struct App {
 
 	sqlite3 *db;
 
-	StateType prev_state;
-	StateType current_state;
-	StateType next_state;
+	int prev_state;
+	int current_state;
+	int next_state;
 
 	int quit;
 	int ch;

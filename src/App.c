@@ -6,6 +6,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+static void App_InitDb(App *app);
+static void App_HandleResize(App *app);
+static void App_UpdateState(App *app, int state);
+static void App_Loop(App *app);
+
 static void App_InitDb(App *app) {
 	sqlite3_open("data.db", &app->db);
 
@@ -36,17 +41,29 @@ static void App_InitDb(App *app) {
 			*/
 }
 
-static void App_Loop(App *app) {
-	refresh();
+static void App_HandleResize(App *app) {
+	App_BuildWindow(app);
 
+	App_UpdateState(app, app->bottom_window.owner_state);
+	App_UpdateState(app, app->top_window.owner_state);
+	App_UpdateState(app, app->content_window.owner_state);
+}
+
+static void App_UpdateState(App *app, int state) {
 	#define EXPAND_AS_CASE(type, state, update) case type: update(app); break;
-	switch(app->current_state) {
+	switch(state) {
 		FOR_STATE_LIST_DO(EXPAND_AS_CASE)
 
 		default:
 			break;
 	}
 	#undef EXPAND_AS_CASE
+}
+
+static void App_Loop(App *app) {
+	refresh();
+
+	App_UpdateState(app, app->current_state);
 
 	wrefresh(app->content_window.win);
 	wrefresh(app->top_window.win);
@@ -54,14 +71,12 @@ static void App_Loop(App *app) {
 
 	app->ch = getch();
 
+	if(app->ch == KEY_RESIZE) {
+		App_HandleResize(app);
+	}
+
 	app->prev_state = app->current_state;
 	app->current_state = app->next_state;
-
-	/*
-	if(app->ch == KEY_RESIZE) {
-		App_BuildWindow(app);
-	}
-	*/
 }
 
 void App_Init(App *app) {
@@ -74,8 +89,6 @@ void App_Init(App *app) {
 
 	keypad(stdscr, TRUE);
 
-	App_BuildWindow(app);
-
 	#define EXPAND_AS_MALLOC(type, state, update) app->states[type] = malloc(sizeof(state));
 	FOR_STATE_LIST_DO(EXPAND_AS_MALLOC)
 	#undef EXPAND_AS_MALLOC
@@ -84,8 +97,14 @@ void App_Init(App *app) {
 	app->ch = 0;
 
 	app->prev_state = STATE_NONE;
-	app->current_state = STATE_START;
-	app->next_state = STATE_START;
+	app->current_state = STATE_ADDGAME;
+	app->next_state = STATE_ADDGAME;
+
+	app->content_window.owner_state = STATE_ADDGAME;
+	app->top_window.owner_state = STATE_MENUBAR;
+	app->bottom_window.owner_state = STATE_NONE;
+
+	App_HandleResize(app);
 }
 
 void App_BuildWindow(App *app) {
@@ -112,18 +131,4 @@ void App_End(App *app) {
 	Window_Destroy(&app->content_window);
 
 	endwin();
-}
-
-void StartState_Update(App *app) {
-	CatalogState *state = (CatalogState *) app->states[STATE_CATALOG];
-
-	Table_GetSqlTable(
-			&state->working_table,
-			app->db,
-			get_game_table_cmd
-			);
-
-	app->next_state = STATE_ADDGAME;
-	Menubar_Update(app);
-	Catalog_Update(app);
 }

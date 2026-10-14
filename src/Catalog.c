@@ -1,4 +1,5 @@
 #include "App.h"
+#include "cmds.h"
 
 static void Catalog_PrintTable(App *app);
 
@@ -35,6 +36,14 @@ static void Catalog_PrintTable(App *app) {
 
 void Catalog_Update(App *app) {
 	CatalogState *state = app->states[STATE_CATALOG];
+
+	if(app->prev_state != STATE_CATALOG) {
+		Table_GetSqlTable(
+				&state->working_table,
+				app->db,
+				get_game_table_cmd
+				);
+	}
 
 	if(app->ch == 'j') {
 		state->row_selected++;

@@ -6,6 +6,7 @@
 typedef struct Window {
 	WINDOW *win;
 	int width, height;
+	int owner_state;
 } Window;
 
 void Window_Create(Window *window, int x, int y, int width, int height);
