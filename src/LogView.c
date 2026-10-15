@@ -1,6 +1,14 @@
 #include "App.h"
 #include "SqlCmds.h"
 
+static const int cols_width[] = {
+	0,
+	37,
+	16,
+	16,
+	11,
+};
+
 static void LogView_UpdateTable(App *app, LogViewState *state);
 static void LogView_HandleInput(App *app, LogViewState *state);
 static void LogView_DrawTable(App *app, LogViewState *state);
@@ -14,6 +22,7 @@ static void LogView_UpdateTable(App *app, LogViewState *state) {
 
 	state->table_data.msg_no_entries = "  No diary entries under this category.";
 	state->table_data.start_row = 1;
+	state->table_data.col_width_values = cols_width;
 }
 
 static void LogView_HandleInput(App *app, LogViewState *state) {
@@ -21,10 +30,6 @@ static void LogView_HandleInput(App *app, LogViewState *state) {
 			&state->table_data,
 			app->ch
 			);
-
-	if(app->ch == KEY_ESCAPE) {
-		app->next_state = STATE_MENUBAR;
-	}
 }
 
 static void LogView_DrawTable(App *app, LogViewState *state) {

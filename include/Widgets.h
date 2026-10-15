@@ -45,6 +45,8 @@ typedef struct {
 	int selected_row;
 
 	const char *msg_no_entries;
+
+	const int *col_width_values;
 } TableWidgetData;
 
 /* Se width = -1, preencher até o final da linha. */

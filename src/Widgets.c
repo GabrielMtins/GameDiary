@@ -1,5 +1,4 @@
 #include "Widgets.h"
-#include "Draw.h"
 
 #include <string.h>
 #include <ctype.h>
@@ -17,9 +16,17 @@ void Widget_Space(WINDOW *win, int width) {
 void Widget_Label(WINDOW *win, const char *label, int width) {
 	if(label == NULL) return;
 
-	if(width < 0) width = strlen(label);
+	int len = strlen(label);
 
-	wprintbynumch(win, label, width);
+	if(width < 0) width = len;
+
+	for(int i = 0; i < width; i++) {
+		if(i >= len) {
+			waddch(win, ' ');
+		} else {
+			waddch(win, label[i]);
+		}
+	}
 }
 
 void Widget_Button(WINDOW *win, const char *label, int width, int selected) {

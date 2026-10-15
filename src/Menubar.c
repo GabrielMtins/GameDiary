@@ -1,5 +1,4 @@
 #include "App.h"
-#include "Draw.h"
 #include "Widgets.h"
 
 #define NUM_BUTTONS ((int) (sizeof(button_labels) / sizeof(const char *)))

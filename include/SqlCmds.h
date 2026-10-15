@@ -41,6 +41,7 @@ static const char *sql_cmd_insert_log =
 
 static const char *sql_cmd_get_log_table =
 "SELECT "
+"l.rowid as id, "
 "g.Name AS Name," 
 "l.StartPlayDate AS [Start Date],"
 "l.EndPlayDate AS [End Date],"

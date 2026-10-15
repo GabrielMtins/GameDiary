@@ -6,6 +6,13 @@ enum InputState {
 	CATALOG_INPUT_DELETE_CONFIRM
 };
 
+static const int cols_width[] = {
+	37,
+	20,
+	15,
+	8,
+};
+
 static const char * Catalog_GetSelectedGameName(App *app, CatalogState *state);
 static void Catalog_UpdateTable(App *app, CatalogState *state);
 static void Catalog_DrawDeleteConfirmation(App *app);
@@ -33,6 +40,7 @@ static void Catalog_UpdateTable(App *app, CatalogState *state) {
 	state->table_data.start_row = 1;
 
 	state->table_data.msg_no_entries = "  There are no games under this category.";
+	state->table_data.col_width_values = cols_width;
 }
 
 static void Catalog_DrawDeleteConfirmation(App *app) {
@@ -61,10 +69,6 @@ static void Catalog_DrawTable(App *app, CatalogState *state) {
 
 static void Catalog_HandleInputNav(App *app, CatalogState *state) {
 	TableWidgetData_HandleInput(&state->table_data, app->ch);
-
-	if(app->ch == KEY_ESCAPE) {
-		app->next_state = STATE_MENUBAR;
-	}
 
 	if(app->ch == 'd' && state->table_data.working_table.nrow > 1) {
 		state->input_state = CATALOG_INPUT_DELETE_CONFIRM;
