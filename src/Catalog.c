@@ -1,5 +1,6 @@
 #include "App.h"
 #include "SqlCmds.h"
+#include "Util.h"
 
 enum InputState {
 	CATALOG_INPUT_NAV,
@@ -20,7 +21,7 @@ static void Catalog_DrawTable(App *app, CatalogState *state);
 static void Catalog_HandleInputNav(App *app, CatalogState *state);
 static void Catalog_HandleInputDeleteConfirm(App *app, CatalogState *state);
 static void Catalog_HandleInput(App *app, CatalogState *state);
-static void Catalog_HandleDelete(App *app, CatalogState *state);
+static void Catalog_HandleDeleteQuery(App *app, CatalogState *state);
 
 static const char * Catalog_GetSelectedGameName(App *app, CatalogState *state) {
 	(void) app;
@@ -36,8 +37,6 @@ static void Catalog_UpdateTable(App *app, CatalogState *state) {
 			app->db,
 			sql_cmd_get_game_table
 			);
-
-	state->table_data.start_row = 1;
 
 	state->table_data.msg_no_entries = "  There are no games under this category.";
 	state->table_data.col_width_values = cols_width;
@@ -92,7 +91,7 @@ static void Catalog_HandleInputDeleteConfirm(App *app, CatalogState *state) {
 	if(app->ch == 'y' || app->ch == '\n') {
 		state->input_state = CATALOG_INPUT_NAV;
 
-		Catalog_HandleDelete(app, state);
+		Catalog_HandleDeleteQuery(app, state);
 		Catalog_UpdateTable(app, state);
 	}
 }
@@ -109,21 +108,11 @@ static void Catalog_HandleInput(App *app, CatalogState *state) {
 	}
 }
 
-static void Catalog_HandleDelete(App *app, CatalogState *state) {
-	char *cmd = NULL;
-	int len;
-	const char *game_name = Catalog_GetSelectedGameName(app, state);
+static void Catalog_HandleDeleteQuery(App *app, CatalogState *state) {
+	char *cmd;
+
+	cmd = safe_sprintf(sql_cmd_delete_game, Catalog_GetSelectedGameName(app, state));
 	
-	len = snprintf(cmd, 0, sql_cmd_delete_game,
-			game_name
-			) + 1;
-
-	cmd = (char *) malloc(len);
-
-	snprintf(cmd, len, sql_cmd_delete_game,
-			game_name
-			);
-
 	sqlite3_exec(
 			app->db,
 			cmd,

@@ -133,3 +133,9 @@ void FormWidgetData_ResetInput(FormWidgetData *data) {
 
 	data->input_selected = 0;
 }
+
+void FormWidgetData_AddTerminatorToInputs(FormWidgetData *data) {
+	for(int i = 0; i < data->num_inputs; i++) {
+		data->inputs[i].str[data->inputs[i].len] = '\0';
+	}
+}

@@ -1,5 +1,6 @@
 #include "App.h"
 #include "SqlCmds.h"
+#include "Util.h"
 
 static const char *labels[] = {
 	" Name:",
@@ -41,25 +42,12 @@ static void AddGame_OkCallback(void *args) {
 }
 
 static void AddGame_HandleAddQuery(App *app, AddGameState *state) {
-	char *cmd = NULL;
-	int len;
+	char *cmd;
 
-	for(int i = 0; i < state->form_data.num_inputs; i++) {
-		LineWidgetData *input = &state->form_data.inputs[i];
+	FormWidgetData_AddTerminatorToInputs(&state->form_data);
 
-		input->str[input->len] = '\0';
-	}
-
-	len = snprintf(cmd, 0, sql_cmd_insert_game,
-			state->form_data.inputs[0].str,
-			state->form_data.inputs[1].str,
-			state->form_data.inputs[2].str,
-			state->form_data.inputs[3].str
-			) + 1;
-
-	cmd = (char *) malloc(len);
-
-	snprintf(cmd, len, sql_cmd_insert_game,
+	cmd = safe_sprintf(
+			sql_cmd_insert_game,
 			state->form_data.inputs[0].str,
 			state->form_data.inputs[1].str,
 			state->form_data.inputs[2].str,

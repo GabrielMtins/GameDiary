@@ -1,5 +1,6 @@
 #include "App.h"
 #include "SqlCmds.h"
+#include "Util.h"
 
 static const char *labels[] = {
 	" Start date:",
@@ -25,25 +26,12 @@ static void AddLog_SetUpForm(App *app, AddLogState *state) {
 }
 
 static void AddLog_HandleAddQuery(App *app, AddLogState *state) {
-	char *cmd = NULL;
-	int len;
+	char *cmd;
 
-	for(int i = 0; i < state->form_data.num_inputs; i++) {
-		LineWidgetData *input = &state->form_data.inputs[i];
+	FormWidgetData_AddTerminatorToInputs(&state->form_data);
 
-		input->str[input->len] = '\0';
-	}
-
-	len = snprintf(cmd, 0, sql_cmd_insert_log,
-			state->chosen_game,
-			state->form_data.inputs[0].str,
-			state->form_data.inputs[1].str,
-			state->form_data.inputs[2].str
-			) + 1;
-
-	cmd = (char *) malloc(len);
-
-	snprintf(cmd, len, sql_cmd_insert_log,
+	cmd = safe_sprintf(
+			sql_cmd_insert_log,
 			state->chosen_game,
 			state->form_data.inputs[0].str,
 			state->form_data.inputs[1].str,

@@ -37,7 +37,7 @@ static void TableWidgetData_DrawLine(WINDOW *win, const TableWidgetData* data, i
 	waddch(win, '|');
 }
 
-void Widget_Table(WINDOW *win, const TableWidgetData *data) {
+void Widget_Table(WINDOW *win, TableWidgetData *data) {
 	const int start_y = getcury(win) + 1;
 	const int end_y = getmaxy(win);
 
@@ -51,12 +51,18 @@ void Widget_Table(WINDOW *win, const TableWidgetData *data) {
 				0,
 				0
 				);
+
+		if(data->selected_row >= data->working_table.nrow) {
+			data->selected_row = data->working_table.nrow - 1;
+		}
 	} else {
 		/* Show error message if there are no entries. */
 		wmove(win, getcury(win), 0);
 		Widget_Label(win, data->msg_no_entries, -1);
 		Widget_Space(win, -1);
 	}
+
+	if(data->start_row < 1) data->start_row = 1;
 
 	for(int line = start_y; line < end_y; line++) {
 		int current_row = (line - start_y) + data->start_row;

@@ -65,7 +65,9 @@ void Widget_Form(WINDOW *win, FormWidgetData *data, int ch);
 
 void FormWidgetData_ResetInput(FormWidgetData *data);
 
-void Widget_Table(WINDOW *win, const TableWidgetData *data);
+void FormWidgetData_AddTerminatorToInputs(FormWidgetData *data);
+
+void Widget_Table(WINDOW *win, TableWidgetData *data);
 
 void TableWidgetData_HandleInput(TableWidgetData *data, int ch);
 

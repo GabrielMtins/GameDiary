@@ -11,10 +11,11 @@ static const char *sql_cmd_create_tables =
 ");"
 
 "CREATE TABLE IF NOT EXISTS LogTable ("
+"id INTEGER PRIMARY KEY,"
 "GameId INTEGER NOT NULL,"
 "StartPlayDate CHAR(10),"
 "EndPlayDate CHAR(10),"
-"Score INT,"
+"Score INTEGER,"
 "FOREIGN KEY (GameId) REFERENCES GameTable(id) "
 "ON DELETE CASCADE "
 "ON UPDATE CASCADE"
@@ -39,9 +40,13 @@ static const char *sql_cmd_insert_log =
 "\'%s\', \'%s\', \'%s\');"
 ;
 
+static const char *sql_cmd_delete_log =
+"DELETE FROM LogTable WHERE id=%s;"
+;
+
 static const char *sql_cmd_get_log_table =
 "SELECT "
-"l.rowid as id, "
+"l.id as id, "
 "g.Name AS Name," 
 "l.StartPlayDate AS [Start Date],"
 "l.EndPlayDate AS [End Date],"
