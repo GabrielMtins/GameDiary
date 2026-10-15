@@ -2,6 +2,15 @@
 #include "SqlCmds.h"
 #include "Util.h"
 
+#include <ctype.h>
+
+enum AddGameInputEnum {
+	ADDGAME_INPUT_NAME = 0,
+	ADDGAME_INPUT_GENRE,
+	ADDGAME_INPUT_PLATFORM,
+	ADDGAME_INPUT_YEAR
+};
+
 static const char *labels[] = {
 	" Name:",
 	" Genre:",
@@ -12,12 +21,14 @@ static const char *labels[] = {
 static void AddGame_SetUpForm(App *app, AddGameState *state);
 static void AddGame_CancelCallback(void *args);
 static void AddGame_OkCallback(void *args);
+static bool AddGame_VerifyInputs(App *app, AddGameState *state);
 static void AddGame_HandleAddQuery(App *app, AddGameState *state);
+static void AddGame_ShowErrorMsg(App *app, AddGameState *state);
 
 static void AddGame_SetUpForm(App *app, AddGameState *state) {
 	state->form_data.num_inputs = 4;
 
-	state->form_data.form_title = "  Add game";
+	state->form_data.form_title = "  Write game information.";
 	state->form_data.labels = labels;
 	state->form_data.labels_width = 11;
 
@@ -36,9 +47,37 @@ static void AddGame_OkCallback(void *args) {
 	App *app = (App *) args;
 	AddGameState *state = (AddGameState *) app->states[STATE_ADDGAME];
 
+	if(!AddGame_VerifyInputs(app, state)) {
+		return;
+	}
+
 	AddGame_HandleAddQuery(app, state);
 
 	app->next_state = STATE_CATALOG;
+}
+
+static bool AddGame_VerifyInputs(App *app, AddGameState *state) {
+	(void) app;
+
+	const char *str;
+	int len;
+
+	if(state->form_data.inputs[ADDGAME_INPUT_NAME].len == 0) {
+		state->error_msg = "Error: Game name must not be empty.";
+		return false;
+	}
+
+	str = state->form_data.inputs[ADDGAME_INPUT_YEAR].str;
+	len = state->form_data.inputs[ADDGAME_INPUT_YEAR].len;
+
+	for(int i = 0; i < len; i++) {
+		if(!isdigit(str[i])) {
+			state->error_msg = "Error: Year must be a number.";
+			return false;
+		}
+	}
+
+	return true;
 }
 
 static void AddGame_HandleAddQuery(App *app, AddGameState *state) {
@@ -65,6 +104,19 @@ static void AddGame_HandleAddQuery(App *app, AddGameState *state) {
 	free(cmd);
 }
 
+static void AddGame_ShowErrorMsg(App *app, AddGameState *state) {
+	if(state->error_msg == NULL) return;
+
+	WINDOW *win = app->bottom_window.win;
+
+	wmove(win, 0, 0);
+	wattrset(win, A_NORMAL);
+
+	Widget_Space(win, 1);
+	Widget_Label(win, state->error_msg, -1);
+	Widget_Space(win, -1);
+}
+
 void AddGame_Update(App *app) {
 	AddGameState *state = (AddGameState *) app->states[STATE_ADDGAME];
 
@@ -74,6 +126,7 @@ void AddGame_Update(App *app) {
 
 	if(App_IsNewState(app)) {
 		state->form_data.should_clear = true;
+		state->error_msg = NULL;
 		FormWidgetData_ResetInput(&state->form_data);
 	}
 
@@ -86,4 +139,6 @@ void AddGame_Update(App *app) {
 			&state->form_data,
 			app->ch
 			);
+
+	AddGame_ShowErrorMsg(app, state);
 }

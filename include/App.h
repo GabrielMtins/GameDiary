@@ -39,6 +39,7 @@ typedef struct MenubarState {
 
 typedef struct AddGameState {
 	FormWidgetData form_data;
+	const char *error_msg;
 } AddGameState;
 
 #define LOG_STR_SIZE 256
@@ -47,6 +48,8 @@ typedef struct AddLogState {
 
 	char form_title_data[LOG_STR_SIZE];
 	char chosen_game[LOG_STR_SIZE];
+
+	const char *error_msg;
 } AddLogState;
 
 typedef struct App App;

@@ -87,12 +87,16 @@ static void FormWidget_HandleInput(FormWidgetData *data, int ch) {
 		if(data->cancel_callback != NULL) {
 			data->cancel_callback(data->callback_args);
 		}
+
+		return;
 	}
 
 	if(ch == '\n' && data->input_selected == FORM_BUTTON_OK) {
 		if(data->ok_callback != NULL) {
 			data->ok_callback(data->callback_args);
 		}
+
+		return;
 	}
 
 	if(ch == KEY_DOWN || ch == '\n' || ch == '\t') {
