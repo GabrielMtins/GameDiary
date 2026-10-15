@@ -36,15 +36,16 @@ static void Menubar_HandleInput(App *app, MenubarState *state) {
 		return;
 	}
 
-	if(app->ch == 'l' || app->ch == KEY_RIGHT) {
+	if(app->ch == '\t' || app->ch == 'K' || (app->prev_ch == 'g' && app->ch == 't')) {
 		state->button_selected++;
 	}
 
-	if(app->ch == 'h' || app->ch == KEY_LEFT) {
+	if(app->ch == KEY_BTAB || app->ch == 'J' || (app->prev_ch == 'g' && app->ch == 'T')) {
 		state->button_selected--;
 	}
 
-	LIMIT_VAR(state->button_selected, 0, NUM_BUTTONS);
+	if(state->button_selected < 0) state->button_selected = NUM_BUTTONS - 1;
+	if(state->button_selected >= NUM_BUTTONS) state->button_selected = 0;
 
 	app->next_state = button_to_state[state->button_selected];
 }

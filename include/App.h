@@ -95,6 +95,7 @@ struct App {
 	int next_state;
 
 	int quit;
+	int prev_ch;
 	int ch;
 };
 

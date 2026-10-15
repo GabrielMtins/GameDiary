@@ -93,6 +93,7 @@ static void App_Loop(App *app) {
 		App_RefreshWindows(app);
 	}
 
+	app->prev_ch = app->ch;
 	app->ch = getch();
 }
 
