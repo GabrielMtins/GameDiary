@@ -13,6 +13,7 @@
 
 #define FOR_STATE_LIST(DO) \
 	DO(STATE_CATALOG, CatalogState, Catalog_Update) \
+	DO(STATE_LOGVIEW, LogViewState, LogView_Update) \
 	DO(STATE_MENUBAR, MenubarState, Menubar_Update) \
 	DO(STATE_ADDGAME, AddGameState, AddGame_Update) \
 	DO(STATE_ADDLOG,  AddLogState,  AddLog_Update ) \
@@ -25,6 +26,12 @@ typedef struct CatalogState {
 
 	TableWidgetData table_data;
 } CatalogState;
+
+typedef struct {
+	int input_state;
+
+	TableWidgetData table_data;
+} LogViewState;
 
 typedef struct MenubarState {
 	int button_selected;

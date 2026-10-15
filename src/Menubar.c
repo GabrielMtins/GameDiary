@@ -2,33 +2,52 @@
 #include "Draw.h"
 #include "Widgets.h"
 
-#define NUM_BUTTONS 3
+#define NUM_BUTTONS ((int) (sizeof(button_labels) / sizeof(const char *)))
 
 static const char *button_labels[] = {
 	" Games",
 	" Diary",
 	" Stats",
+	" About"
 };
 
+static const int button_to_state[] = {
+	STATE_CATALOG,
+	STATE_LOGVIEW,
+	STATE_NONE,
+	STATE_NONE,
+};
+
+static bool Menubar_CheckIfStateIsOfMenubar(App *app);
 static void Menubar_HandleInput(App *app, MenubarState *state);
 static void Menubar_Draw(App *app, MenubarState *state);
 
+static bool Menubar_CheckIfStateIsOfMenubar(App *app) {
+	for(int i = 0; i < NUM_BUTTONS; i++) {
+		if(app->current_state == button_to_state[i]) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 static void Menubar_HandleInput(App *app, MenubarState *state) {
-	if(app->ch == 'k') {
+	if(!Menubar_CheckIfStateIsOfMenubar(app)) {
+		return;
+	}
+
+	if(app->ch == 'l' || app->ch == KEY_RIGHT) {
 		state->button_selected++;
 	}
 
-	if(app->ch == 'j') {
+	if(app->ch == 'h' || app->ch == KEY_LEFT) {
 		state->button_selected--;
 	}
 
-	if(state->button_selected < 0) {
-		state->button_selected = 0;
-	} 
+	LIMIT_VAR(state->button_selected, 0, NUM_BUTTONS);
 
-	if(state->button_selected >= NUM_BUTTONS) {
-		state->button_selected = NUM_BUTTONS - 1;
-	}
+	app->next_state = button_to_state[state->button_selected];
 }
 
 static void Menubar_Draw(App *app, MenubarState *state) {

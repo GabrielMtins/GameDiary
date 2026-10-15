@@ -62,6 +62,10 @@ static void Catalog_DrawTable(App *app, CatalogState *state) {
 static void Catalog_HandleInputNav(App *app, CatalogState *state) {
 	TableWidgetData_HandleInput(&state->table_data, app->ch);
 
+	if(app->ch == KEY_ESCAPE) {
+		app->next_state = STATE_MENUBAR;
+	}
+
 	if(app->ch == 'd' && state->table_data.working_table.nrow > 1) {
 		state->input_state = CATALOG_INPUT_DELETE_CONFIRM;
 	}
@@ -134,6 +138,7 @@ void Catalog_Update(App *app) {
 		Catalog_UpdateTable(app, state);
 
 		app->content_window.owner_state = STATE_CATALOG;
+		state->input_state = CATALOG_INPUT_NAV;
 	}
 
 	Catalog_HandleInput(app, state);

@@ -37,7 +37,13 @@ static const char *sql_cmd_get_game_table =
 ;
 
 static const char *sql_cmd_get_log_table =
-"SELECT * FROM LogTable ORDER BY StartPlayDate ASC;"
+"SELECT "
+"GameName AS Name," 
+"StartPlayDate AS [Start Date],"
+"EndPlayDate AS [End Date],"
+"Score "
+"FROM LogTable "
+"ORDER BY StartPlayDate DESC;"
 ;
 
 #endif

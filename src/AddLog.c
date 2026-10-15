@@ -100,6 +100,7 @@ void AddLog_Update(App *app) {
 	if(App_IsNewState(app)) {
 		state->form_data.should_clear = true;
 		app->content_window.owner_state = STATE_ADDLOG;
+		FormWidgetData_ResetInput(&state->form_data);
 	}
 
 	if(app->ch == KEY_ESCAPE) {
