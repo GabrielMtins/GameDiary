@@ -7,6 +7,15 @@ enum AddLogInputEnum {
 	ADDLOG_INPUT_STARTDATE = 0,
 	ADDLOG_INPUT_ENDDATE,
 	ADDLOG_INPUT_SCORE,
+	ADDLOG_NUM_INPUTS,
+};
+
+enum AddLogUpdateArgsEnum {
+	ADDLOG_UPDATE_ID,
+	ADDLOG_UPDATE_GAMENAME,
+	ADDLOG_UPDATE_STARTDATE,
+	ADDLOG_UPDATE_ENDDATE,
+	ADDLOG_UPDATE_SCORE,
 };
 
 static const char *labels[] = {
@@ -17,6 +26,7 @@ static const char *labels[] = {
 
 static void AddLog_SetUpForm(App *app, AddLogState *state);
 static void AddLog_HandleAddQuery(App *app, AddLogState *state);
+static void AddLog_HandleUpdateQuery(App *app, AddLogState *state);
 static bool AddLog_VerifyIfInputIsDate(const LineWidgetData *data);
 static bool AddLog_VerifyInputs(App *app, AddLogState *state);
 static void AddLog_OkCallback(void *args);
@@ -59,6 +69,30 @@ static void AddLog_HandleAddQuery(App *app, AddLogState *state) {
 	free(cmd);
 }
 
+static void AddLog_HandleUpdateQuery(App *app, AddLogState *state) {
+	char *cmd;
+
+	FormWidgetData_AddTerminatorToInputs(&state->form_data);
+
+	cmd = safe_sprintf(
+			sql_cmd_update_log,
+			state->form_data.inputs[0].str,
+			state->form_data.inputs[1].str,
+			state->form_data.inputs[2].str,
+			state->chosen_game
+			);
+
+	sqlite3_exec(
+			app->db,
+			cmd,
+			NULL,
+			NULL,
+			NULL
+			);
+
+	free(cmd);
+}
+
 static void AddLog_OkCallback(void *args) {
 	App *app = (App *) args;
 
@@ -68,9 +102,17 @@ static void AddLog_OkCallback(void *args) {
 		return;
 	}
 
-	AddLog_HandleAddQuery(app, state);
+	switch(app->current_state) {
+		case STATE_ADDLOG:
+			AddLog_HandleAddQuery(app, state);
+			app->next_state = STATE_CATALOG;
+			break;
 
-	app->next_state = STATE_CATALOG;
+		case STATE_UPDATELOG:
+			AddLog_HandleUpdateQuery(app, state);
+			app->next_state = STATE_LOGVIEW;
+			break;
+	}
 }
 
 static bool AddLog_VerifyIfInputIsDate(const LineWidgetData *data) {
@@ -153,6 +195,26 @@ static void AddLog_ShowErrorMsg(App *app, AddLogState *state) {
 	Widget_Space(win, -1);
 }
 
+void AddLog_SetUpdateData(App *app, char **data) {
+	AddLogState *state = (AddLogState *) app->states[STATE_ADDLOG];
+
+	AddLog_SetGame(app, data[ADDLOG_UPDATE_GAMENAME]);
+
+	for(int i = 0; i < ADDLOG_NUM_INPUTS; i++) {
+		char *str = state->form_data.inputs[i].str;
+
+		strncpy(
+				str,
+				data[ADDLOG_UPDATE_STARTDATE + i],
+				MAX_LINE_SIZE
+			   );
+
+		state->form_data.inputs[i].len = strlen(str);
+	}
+
+	strncpy(state->chosen_game, data[ADDLOG_UPDATE_ID], LOG_STR_SIZE);
+}
+
 void AddLog_SetGame(App *app, const char *str) {
 	AddLogState *state = (AddLogState *) app->states[STATE_ADDLOG];
 
@@ -176,7 +238,11 @@ void AddLog_Update(App *app) {
 	if(App_IsNewState(app)) {
 		state->form_data.should_clear = true;
 		app->content_window.owner_state = STATE_ADDLOG;
-		FormWidgetData_ResetInput(&state->form_data);
+
+		if(app->current_state == STATE_ADDLOG) {
+			FormWidgetData_ResetInput(&state->form_data);
+		}
+
 		state->error_msg = NULL;
 	}
 

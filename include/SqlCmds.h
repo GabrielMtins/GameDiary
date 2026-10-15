@@ -23,11 +23,11 @@ static const char *sql_cmd_create_tables =
 ;
 
 static const char *sql_cmd_insert_game = 
-"INSERT INTO GameTable (Name, Genre, Platform, Year) VALUES (\'%s\', \'%s\', \'%s\', \'%s\');"
+"INSERT INTO GameTable (Name, Genre, Platform, Year) VALUES ('%s', '%s', '%s', '%s');"
 ;
 
 static const char *sql_cmd_delete_game =
-"DELETE FROM GameTable WHERE Name=\'%s\';"
+"DELETE FROM GameTable WHERE Name='%s';"
 ;
 
 static const char *sql_cmd_get_game_table = 
@@ -36,12 +36,18 @@ static const char *sql_cmd_get_game_table =
 
 static const char *sql_cmd_insert_log =
 "INSERT INTO LogTable (GameId, StartPlayDate, EndPlayDate, Score) VALUES "
-"((SELECT id FROM GameTable Where Name=\'%s\'),"
-"\'%s\', \'%s\', \'%s\');"
+"((SELECT id FROM GameTable Where Name='%s'),"
+"'%s', '%s', '%s');"
 ;
 
 static const char *sql_cmd_delete_log =
 "DELETE FROM LogTable WHERE id=%s;"
+;
+
+static const char *sql_cmd_update_log =
+"UPDATE LogTable "
+"SET StartPlayDate='%s', EndPlayDate='%s', Score='%s' "
+"WHERE id=%s;"
 ;
 
 static const char *sql_cmd_get_log_table =

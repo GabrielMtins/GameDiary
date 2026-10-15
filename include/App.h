@@ -12,12 +12,13 @@
 #define KEY_ESCAPE 27
 
 #define FOR_STATE_LIST(DO) \
-	DO(STATE_CATALOG, CatalogState, Catalog_Update) \
-	DO(STATE_LOGVIEW, LogViewState, LogView_Update) \
-	DO(STATE_MENUBAR, MenubarState, Menubar_Update) \
-	DO(STATE_ADDGAME, AddGameState, AddGame_Update) \
-	DO(STATE_ADDLOG,  AddLogState,  AddLog_Update ) \
-	DO(STATE_LOGO,    int,          Logo_Update)
+	DO(STATE_CATALOG,   CatalogState, Catalog_Update) \
+	DO(STATE_LOGVIEW,   LogViewState, LogView_Update) \
+	DO(STATE_MENUBAR,   MenubarState, Menubar_Update) \
+	DO(STATE_ADDGAME,   AddGameState, AddGame_Update) \
+	DO(STATE_ADDLOG,    AddLogState,  AddLog_Update ) \
+	DO(STATE_UPDATELOG, int,          AddLog_Update ) \
+	DO(STATE_LOGO,      int,          Logo_Update)
 
 #define LIMIT_VAR(x, min_x, max_x) (x = (x < (min_x)) ? (min_x) : ((x >= (max_x)) ? (max_x - 1) : x))
 
@@ -63,6 +64,8 @@ void App_End(App *app);
 void App_ClearBottomWindow(App *app);
 
 bool App_IsNewState(App *app);
+
+void AddLog_SetUpdateData(App *app, char **data);
 
 void AddLog_SetGame(App *app, const char *str);
 

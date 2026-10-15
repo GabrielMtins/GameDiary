@@ -43,6 +43,16 @@ static void LogView_HandleInputNav(App *app, LogViewState *state) {
 	if(app->ch == 'd' && state->table_data.working_table.nrow > 1) {
 		state->input_state = LOGVIEW_INPUT_DELETE;
 	}
+
+	if(app->ch == 'r' && state->table_data.working_table.nrow > 1) {
+		Table *table = &state->table_data.working_table;
+
+		app->next_state = STATE_UPDATELOG;
+		AddLog_SetUpdateData(
+				app,
+				&table->str[table->ncol * state->table_data.selected_row]
+				);
+	}
 }
 
 static void LogView_HandleInputDelete(App *app, LogViewState *state) {
