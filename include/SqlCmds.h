@@ -9,10 +9,10 @@ static const char *sql_cmd_create_tables =
 "Year YEAR"
 ");"
 
-"CREATE TABLE IF NOT EXISTS ReviewTable ("
+"CREATE TABLE IF NOT EXISTS LogTable ("
 "GameName INT NOT NULL REFERENCES GameTable(Name),"
-"StartPlayDate DATE,"
-"EndPlayDate DATE,"
+"StartPlayDate CHAR(10),"
+"EndPlayDate CHAR(10),"
 "Stars INT"
 ");"
 ;
@@ -27,6 +27,10 @@ static const char *sql_cmd_delete_game =
 
 static const char *sql_cmd_get_game_table = 
 "SELECT * FROM GameTable ORDER BY Name ASC;"
+;
+
+static const char *sql_cmd_get_log_table =
+"SELECT * FROM LogTable ORDER BY StartPlayDate ASC;"
 ;
 
 #endif

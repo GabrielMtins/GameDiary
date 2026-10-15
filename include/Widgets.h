@@ -28,8 +28,10 @@ typedef struct {
 	const char **labels;
 	int labels_width;
 
-	void (*cancel_button_callback)(void *);
-	void (*ok_button_callback)(void *);
+	int should_clear;
+
+	void (*cancel_callback)(void *);
+	void (*ok_callback)(void *);
 
 	void *callback_args;
 } FormWidgetData;
@@ -47,5 +49,7 @@ void Widget_InputLine(WINDOW *win, const LineWidgetData *data);
 void LineWidgetData_HandleInput(LineWidgetData *data, int ch);
 
 void Widget_Form(WINDOW *win, FormWidgetData *data, int ch);
+
+void FormWidgetData_ResetInput(FormWidgetData *data);
 
 #endif

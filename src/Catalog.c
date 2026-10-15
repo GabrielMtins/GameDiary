@@ -6,6 +6,7 @@ enum InputState {
 	CATALOG_INPUT_DELETE_CONFIRM
 };
 
+static const char * Catalog_GetSelectedGameName(App *app, CatalogState *state);
 static void Catalog_UpdateTable(App *app, CatalogState *state);
 static void Catalog_DrawClear(App *app, CatalogState *state);
 static void Catalog_DrawTable(App *app, CatalogState *state);
@@ -14,6 +15,12 @@ static void Catalog_HandleInputNav(App *app, CatalogState *state);
 static void Catalog_HandleInputDeleteConfirm(App *app, CatalogState *state);
 static void Catalog_HandleInput(App *app, CatalogState *state);
 static void Catalog_HandleDelete(App *app, CatalogState *state);
+
+static const char * Catalog_GetSelectedGameName(App *app, CatalogState *state) {
+	return state->working_table.str[
+		state->row_selected * state->working_table.ncol
+	];
+}
 
 static void Catalog_UpdateTable(App *app, CatalogState *state) {
 	Table_GetSqlTable(
@@ -107,6 +114,11 @@ static void Catalog_HandleInputNav(App *app, CatalogState *state) {
 
 	if(app->ch == 'a') {
 		app->next_state = STATE_ADDGAME;
+	}
+
+	if(app->ch == 'i') {
+		AddLog_SetGame(app, Catalog_GetSelectedGameName(app, state));
+		app->next_state = STATE_ADDLOG;
 	}
 }
 

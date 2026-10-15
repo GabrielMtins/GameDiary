@@ -7,6 +7,7 @@
 #include <sqlite3.h>
 
 #include <stdlib.h>
+#include <string.h>
 
 #define KEY_ESCAPE 27
 
@@ -32,18 +33,16 @@ typedef struct MenubarState {
 	int button_selected;
 } MenubarState;
 
-#define ADD_GAME_NUM_INPUTS 4
 typedef struct AddGameState {
-	LineWidgetData inputs[ADD_GAME_NUM_INPUTS];
-
-	int input_selected;
+	FormWidgetData form_data;
 } AddGameState;
 
-#define ADD_LOG_NUM_INPUTS 3
+#define LOG_STR_SIZE 256
 typedef struct AddLogState {
-	LineWidgetData inputs[ADD_LOG_NUM_INPUTS];
+	FormWidgetData form_data;
 
-	int input_selected;
+	char form_title_data[LOG_STR_SIZE];
+	char chosen_game[LOG_STR_SIZE];
 } AddLogState;
 
 typedef struct App App;
@@ -57,6 +56,8 @@ void App_End(App *app);
 void App_ClearBottomWindow(App *app);
 
 bool App_IsNewState(App *app);
+
+void AddLog_SetGame(App *app, const char *str);
 
 /* ============= MACROS EXPANDING ============= */
 

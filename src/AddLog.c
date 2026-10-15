@@ -1,34 +1,57 @@
 #include "App.h"
 
-#define LOG_LABEL_START_X 2
-#define LOG_LABEL_START_Y 2
-#define LOG_LABEL_SIZE 11
-#define LOG_LABEL_END_X (LOG_LABEL_START_X + LOG_LABEL_SIZE)
+static const char *labels[] = {
+	" Start date:",
+	" End date:",
+	" Score: ",
+};
 
-#define ADD_LOG_NUM_BUTTONS 2
+static void AddLog_SetUpForm(App *app, AddLogState *state);
 
-#define ADD_LOG_BUTTON_CANCEL (ADD_LOG_NUM_INPUTS + 0)
-#define ADD_LOG_BUTTON_OK (ADD_LOG_NUM_INPUTS + 1)
+static void AddLog_SetUpForm(App *app, AddLogState *state) {
+	state->form_data.num_inputs = 3;
 
-#define game_label_start(i) LOG_LABEL_START_Y + i * 2, LOG_LABEL_START_X
-#define game_label_end(i)   LOG_LABEL_START_Y + i * 2, LOG_LABEL_END_X
+	state->form_data.form_title = state->form_title_data;
+	state->form_data.labels = labels;
+	state->form_data.labels_width = 13;
 
-static void AddLog_ResetInput(App *app, AddLogState *state);
-static void AddLog_DrawClear(App *app);
+	state->form_data.callback_args = (void *) app;
+	state->form_data.cancel_callback = NULL;
+	state->form_data.ok_callback = NULL;
+}
 
-static void AddLog_ResetInput(App *app, AddLogState *state) {
-	//AddGame_DrawClear(app);
+void AddLog_SetGame(App *app, const char *str) {
+	AddLogState *state = (AddLogState *) app->states[STATE_ADDLOG];
 
-	state->input_selected = 0;
+	strncpy(state->chosen_game, str, LOG_STR_SIZE - 1);
 
-	for(int i = 0; i < ADD_GAME_NUM_INPUTS; i++) {
-		state->inputs[i].width = app->content_window.width - LOG_LABEL_END_X - 2;
-		state->inputs[i].len = 0;
-		state->inputs[i].cursor_pos = 0;
-		state->inputs[i].bg_attron = A_DIM | A_REVERSE;
-	}
+	snprintf(
+			state->form_title_data,
+			LOG_STR_SIZE,
+			"  Log game: %s",
+			state->chosen_game
+			);
 }
 
 void AddLog_Update(App *app) {
+	AddLogState *state = (AddLogState *) app->states[STATE_ADDLOG];
+
+	if(state->form_data.num_inputs == 0) {
+		AddLog_SetUpForm(app, state);
+	}
+
+	if(App_IsNewState(app)) {
+		state->form_data.should_clear = true;
+	}
+
+	if(app->ch == KEY_ESCAPE) {
+		app->next_state = STATE_CATALOG;
+	}
+
+	Widget_Form(
+			app->content_window.win,
+			&state->form_data,
+			app->ch
+			);
 
 }

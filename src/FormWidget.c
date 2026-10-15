@@ -3,7 +3,7 @@
 #include "App.h"
 
 #define FORM_WIDGET_NUM_BUTTONS 2
-#define FORM_END_LABEL_X(labels_width) (2 + labels_width)
+#define FORM_END_LABEL_X (2 + data->labels_width)
 
 #define FORM_BUTTON_CANCEL (data->num_inputs + 0)
 #define FORM_BUTTON_OK (data->num_inputs + 1)
@@ -14,6 +14,7 @@
 static void FormWidget_DrawClear(WINDOW *win, const FormWidgetData *data);
 static void FormWidget_DrawInput(WINDOW *win, FormWidgetData *data);
 static void FormWidget_DrawButton(WINDOW *win, const FormWidgetData *data);
+static void FormWidget_SetUpInputWidget(WINDOW *win, FormWidgetData *data);
 static void FormWidget_HandleInput(FormWidgetData *data, int ch);
 
 static void FormWidget_DrawClear(WINDOW *win, const FormWidgetData *data) {
@@ -39,7 +40,7 @@ static void FormWidget_DrawInput(WINDOW *win, FormWidgetData *data) {
 	for(int i = 0; i < data->num_inputs; i++) {
 		wmove(win, form_label_end(i, data->labels_width));
 
-		data->inputs[i].width = getmaxy(win) - FORM_END_LABEL_X(data->labels_width) - 2;
+		data->inputs[i].bg_attron = A_REVERSE | A_DIM;
 
 		if(i == data->input_selected) {
 			data->inputs[i].cursor_attron = A_BOLD | A_REVERSE;
@@ -56,7 +57,7 @@ static void FormWidget_DrawButton(WINDOW *win, const FormWidgetData *data) {
 
 	static const int button_padding = 5;
 	static const int button_width = 10;
-	const int middle_screen = getmaxy(win) / 2;
+	const int middle_screen = getmaxx(win) / 2;
 
 	wmove(win, line, middle_screen - button_padding - button_width);
 	Widget_Button(
@@ -75,16 +76,23 @@ static void FormWidget_DrawButton(WINDOW *win, const FormWidgetData *data) {
 			);
 }
 
+static void FormWidget_SetUpInputWidget(WINDOW *win, FormWidgetData *data) {
+	for(int i = 0; i < data->num_inputs; i++) {
+		data->inputs[i].width = getmaxx(win) - FORM_END_LABEL_X - 2;
+		data->inputs[i].bg_attron = A_REVERSE | A_DIM;
+	}
+}
+
 static void FormWidget_HandleInput(FormWidgetData *data, int ch) {
 	if(ch == '\n' && data->input_selected == FORM_BUTTON_CANCEL) {
-		if(data->cancel_button_callback != NULL) {
-			data->cancel_button_callback(data->callback_args);
+		if(data->cancel_callback != NULL) {
+			data->cancel_callback(data->callback_args);
 		}
 	}
 
 	if(ch == '\n' && data->input_selected == FORM_BUTTON_OK) {
-		if(data->ok_button_callback != NULL) {
-			data->ok_button_callback(data->callback_args);
+		if(data->ok_callback != NULL) {
+			data->ok_callback(data->callback_args);
 		}
 	}
 
@@ -107,12 +115,22 @@ static void FormWidget_HandleInput(FormWidgetData *data, int ch) {
 }
 
 void Widget_Form(WINDOW *win, FormWidgetData *data, int ch) {
-	if(ch == KEY_RESIZE) {
+	if(data->should_clear || ch == KEY_RESIZE) {
+		FormWidget_SetUpInputWidget(win, data);
 		FormWidget_DrawClear(win, data);
+		data->should_clear = 0;
 	}
 
 	FormWidget_HandleInput(data, ch);
 
 	FormWidget_DrawInput(win, data);
 	FormWidget_DrawButton(win, data);
+}
+
+void FormWidgetData_ResetInput(FormWidgetData *data) {
+	for(int i = 0; i < data->num_inputs; i++) {
+		data->inputs[i].len = 0;
+	}
+
+	data->input_selected = 0;
 }
