@@ -20,6 +20,14 @@ static void App_InitDb(App *app) {
 
 	sqlite3_exec(
 			app->db,
+			"PRAGMA foreign_keys = ON;",
+			NULL,
+			NULL,
+			NULL
+			);
+
+	sqlite3_exec(
+			app->db,
 			sql_cmd_create_tables,
 			NULL,
 			NULL,

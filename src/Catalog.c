@@ -16,6 +16,8 @@ static void Catalog_HandleInput(App *app, CatalogState *state);
 static void Catalog_HandleDelete(App *app, CatalogState *state);
 
 static const char * Catalog_GetSelectedGameName(App *app, CatalogState *state) {
+	(void) app;
+
 	return state->table_data.working_table.str[
 		state->table_data.selected_row * state->table_data.working_table.ncol
 	];
@@ -29,6 +31,8 @@ static void Catalog_UpdateTable(App *app, CatalogState *state) {
 			);
 
 	state->table_data.start_row = 1;
+
+	state->table_data.msg_no_entries = "  There are no games under this category.";
 }
 
 static void Catalog_DrawDeleteConfirmation(App *app) {
@@ -66,7 +70,7 @@ static void Catalog_HandleInputNav(App *app, CatalogState *state) {
 		app->next_state = STATE_ADDGAME;
 	}
 
-	if(app->ch == 'i') {
+	if(app->ch == 'i' && state->table_data.working_table.nrow > 1) {
 		AddLog_SetGame(app, Catalog_GetSelectedGameName(app, state));
 		app->next_state = STATE_ADDLOG;
 	}
@@ -126,13 +130,11 @@ static void Catalog_HandleDelete(App *app, CatalogState *state) {
 void Catalog_Update(App *app) {
 	CatalogState *state = app->states[STATE_CATALOG];
 
-
 	if(App_IsNewState(app)) {
 		Catalog_UpdateTable(app, state);
 
 		app->content_window.owner_state = STATE_CATALOG;
 	}
-
 
 	Catalog_HandleInput(app, state);
 
