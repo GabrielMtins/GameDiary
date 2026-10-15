@@ -59,6 +59,7 @@ void Widget_Button(WINDOW *win, const char *label, int width, int selected);
 
 void Widget_InputLine(WINDOW *win, const LineWidgetData *data);
 
+/* DIRTY */
 void LineWidgetData_HandleInput(LineWidgetData *data, int ch);
 
 void Widget_Form(WINDOW *win, FormWidgetData *data, int ch);

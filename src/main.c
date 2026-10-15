@@ -6,6 +6,15 @@
 
 #include "App.h"
 
+/* TODO
+ * - Adicionar funcao de atualizar dados do jogo.
+ */
+
+/*
+ * As funcoes que possuem uma tag DIRTY no seu comentario é porque mexem
+ * com memória e necessitam de verificação de dados. 
+ */
+
 int main(void) {
 	App *app;
 

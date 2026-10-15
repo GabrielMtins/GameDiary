@@ -44,6 +44,10 @@ static void Menubar_HandleInput(App *app, MenubarState *state) {
 		state->button_selected--;
 	}
 
+	if(app->ch == 'q') {
+		app->quit = 1;
+	}
+
 	if(state->button_selected < 0) state->button_selected = NUM_BUTTONS - 1;
 	if(state->button_selected >= NUM_BUTTONS) state->button_selected = 0;
 
