@@ -44,7 +44,7 @@ static void LogView_HandleInputNav(App *app, LogViewState *state) {
 		state->input_state = LOGVIEW_INPUT_DELETE;
 	}
 
-	if(app->ch == 'r' && state->table_data.working_table.nrow > 1) {
+	if((app->ch == 'c' || app->ch == 'r') && state->table_data.working_table.nrow > 1) {
 		Table *table = &state->table_data.working_table;
 
 		app->next_state = STATE_UPDATELOG;

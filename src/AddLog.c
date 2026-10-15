@@ -29,6 +29,7 @@ static void AddLog_HandleAddQuery(App *app, AddLogState *state);
 static void AddLog_HandleUpdateQuery(App *app, AddLogState *state);
 static bool AddLog_VerifyIfInputIsDate(const LineWidgetData *data);
 static bool AddLog_VerifyInputs(App *app, AddLogState *state);
+static void AddLog_BackToPrevState(App *app);
 static void AddLog_OkCallback(void *args);
 static void AddLog_CancelCallback(void *args);
 static void AddLog_ShowErrorMsg(App *app, AddLogState *state);
@@ -93,6 +94,18 @@ static void AddLog_HandleUpdateQuery(App *app, AddLogState *state) {
 	free(cmd);
 }
 
+static void AddLog_BackToPrevState(App *app) {
+	switch(app->current_state) {
+		case STATE_ADDLOG:
+			app->next_state = STATE_CATALOG;
+			break;
+
+		case STATE_UPDATELOG:
+			app->next_state = STATE_LOGVIEW;
+			break;
+	}
+}
+
 static void AddLog_OkCallback(void *args) {
 	App *app = (App *) args;
 
@@ -105,14 +118,14 @@ static void AddLog_OkCallback(void *args) {
 	switch(app->current_state) {
 		case STATE_ADDLOG:
 			AddLog_HandleAddQuery(app, state);
-			app->next_state = STATE_CATALOG;
 			break;
 
 		case STATE_UPDATELOG:
 			AddLog_HandleUpdateQuery(app, state);
-			app->next_state = STATE_LOGVIEW;
 			break;
 	}
+
+	AddLog_BackToPrevState(app);
 }
 
 static bool AddLog_VerifyIfInputIsDate(const LineWidgetData *data) {
@@ -179,7 +192,7 @@ static bool AddLog_VerifyInputs(App *app, AddLogState *state) {
 static void AddLog_CancelCallback(void *args) {
 	App *app = (App *) args;
 
-	app->next_state = STATE_CATALOG;
+	AddLog_BackToPrevState(app);
 }
 
 static void AddLog_ShowErrorMsg(App *app, AddLogState *state) {
@@ -209,7 +222,10 @@ void AddLog_SetUpdateData(App *app, char **data) {
 				MAX_LINE_SIZE
 			   );
 
-		state->form_data.inputs[i].len = strlen(str);
+		int len = strlen(str);
+
+		state->form_data.inputs[i].len = len;
+		state->form_data.inputs[i].cursor_pos = len + 1;
 	}
 
 	strncpy(state->chosen_game, data[ADDLOG_UPDATE_ID], LOG_STR_SIZE);
@@ -244,10 +260,6 @@ void AddLog_Update(App *app) {
 		}
 
 		state->error_msg = NULL;
-	}
-
-	if(app->ch == KEY_ESCAPE) {
-		app->next_state = STATE_CATALOG;
 	}
 
 	Widget_Form(

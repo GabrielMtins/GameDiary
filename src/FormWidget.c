@@ -83,7 +83,7 @@ static void FormWidget_SetUpInputWidget(WINDOW *win, FormWidgetData *data) {
 }
 
 static void FormWidget_HandleInput(FormWidgetData *data, int ch) {
-	if(ch == '\n' && data->input_selected == FORM_BUTTON_CANCEL) {
+	if((ch == '\n' && data->input_selected == FORM_BUTTON_CANCEL) || ch == KEY_ESCAPE) {
 		if(data->cancel_callback != NULL) {
 			data->cancel_callback(data->callback_args);
 		}

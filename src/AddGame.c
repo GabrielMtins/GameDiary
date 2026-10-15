@@ -130,10 +130,6 @@ void AddGame_Update(App *app) {
 		FormWidgetData_ResetInput(&state->form_data);
 	}
 
-	if(app->ch == KEY_ESCAPE) {
-		app->next_state = STATE_CATALOG;
-	}
-
 	Widget_Form(
 			app->content_window.win,
 			&state->form_data,
