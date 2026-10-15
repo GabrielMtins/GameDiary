@@ -15,6 +15,8 @@ void Widget_Space(WINDOW *win, int width) {
 }
 
 void Widget_Label(WINDOW *win, const char *label, int width) {
+	if(label == NULL) return;
+
 	if(width < 0) width = strlen(label);
 
 	wprintbynumch(win, label, width);

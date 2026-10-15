@@ -3,6 +3,8 @@
 
 #include <curses.h>
 
+#include "Table.h"
+
 #define MAX_LINE_SIZE 256
 #define FORM_MAX_INPUTS 10
 
@@ -36,6 +38,15 @@ typedef struct {
 	void *callback_args;
 } FormWidgetData;
 
+typedef struct {
+	Table working_table;
+
+	int start_row;
+	int selected_row;
+
+	const char *msg_no_entries;
+} TableWidgetData;
+
 /* Se width = -1, preencher até o final da linha. */
 void Widget_Space(WINDOW *win, int width);
 
@@ -51,5 +62,9 @@ void LineWidgetData_HandleInput(LineWidgetData *data, int ch);
 void Widget_Form(WINDOW *win, FormWidgetData *data, int ch);
 
 void FormWidgetData_ResetInput(FormWidgetData *data);
+
+void Widget_Table(WINDOW *win, const TableWidgetData *data);
+
+void TableWidgetData_HandleInput(TableWidgetData *data, int ch);
 
 #endif

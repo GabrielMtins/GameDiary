@@ -21,12 +21,9 @@
 #define LIMIT_VAR(x, min_x, max_x) (x = (x < (min_x)) ? (min_x) : ((x >= (max_x)) ? (max_x - 1) : x))
 
 typedef struct CatalogState {
-	Table working_table;
-
-	int start_row;
-	int row_selected;
-
 	int input_state;
+
+	TableWidgetData table_data;
 } CatalogState;
 
 typedef struct MenubarState {

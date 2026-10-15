@@ -5,8 +5,8 @@
 #define FORM_WIDGET_NUM_BUTTONS 2
 #define FORM_END_LABEL_X (2 + data->labels_width)
 
-#define FORM_BUTTON_CANCEL (data->num_inputs + 0)
-#define FORM_BUTTON_OK (data->num_inputs + 1)
+#define FORM_BUTTON_CANCEL (data->num_inputs + 1)
+#define FORM_BUTTON_OK (data->num_inputs + 0)
 
 #define form_label_start(i) 2 + i * 2, 2
 #define form_label_end(i, labels_width) 2 + i * 2, 2 + labels_width
@@ -55,11 +55,10 @@ static void FormWidget_DrawInput(WINDOW *win, FormWidgetData *data) {
 static void FormWidget_DrawButton(WINDOW *win, const FormWidgetData *data) {
 	const int line = 2 + data->num_inputs * 2;
 
-	static const int button_padding = 5;
 	static const int button_width = 10;
 	const int middle_screen = getmaxx(win) / 2;
 
-	wmove(win, line, middle_screen - button_padding - button_width);
+	wmove(win, line + 2, middle_screen - button_width / 2);
 	Widget_Button(
 			win,
 			"  Cancel  ",
@@ -67,7 +66,7 @@ static void FormWidget_DrawButton(WINDOW *win, const FormWidgetData *data) {
 			data->input_selected == (FORM_BUTTON_CANCEL)
 			);
 
-	wmove(win, line, middle_screen + button_padding);
+	wmove(win, line, middle_screen - button_width / 2);
 	Widget_Button(
 			win,
 			"    OK    ",

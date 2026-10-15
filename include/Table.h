@@ -13,6 +13,4 @@ void Table_GetSqlTable(Table *table, sqlite3 *db, const char *cmd);
 
 void Table_Destroy(Table *table);
 
-void Table_PrintRowOnWindow(Window *window, Table *table, int window_y, int table_row);
-
 #endif 
