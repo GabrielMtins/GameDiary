@@ -69,30 +69,56 @@ static void Catalog_DrawTable(App *app, CatalogState *state) {
 static void Catalog_HandleInputNav(App *app, CatalogState *state) {
 	TableWidgetData_HandleInput(&state->table_data, app->ch);
 
-	if(app->ch == 'd' && state->table_data.working_table.nrow > 1) {
-		state->input_state = CATALOG_INPUT_DELETE_CONFIRM;
-	}
+	bool is_table_valid = state->table_data.working_table.nrow > 1;
 
-	if(app->ch == 'a') {
-		app->next_state = STATE_ADDGAME;
-	}
+	switch(app->ch) {
+		case 'a':
+			app->next_state = STATE_ADDGAME;
+			break;
 
-	if(app->ch == 'i' && state->table_data.working_table.nrow > 1) {
-		AddLog_SetGame(app, Catalog_GetSelectedGameName(app, state));
-		app->next_state = STATE_ADDLOG;
+		case 'i':
+			if(is_table_valid) {
+				AddLog_SetGame(app, Catalog_GetSelectedGameName(app, state));
+				app->next_state = STATE_ADDLOG;
+			}
+			break;
+
+		case 'd':
+			if(is_table_valid) {
+				state->input_state = CATALOG_INPUT_DELETE_CONFIRM;
+			}
+			break;
+
+		case 'c':
+		case 'r':
+			if(is_table_valid) {
+				Table *table = &state->table_data.working_table;
+
+				app->next_state = STATE_UPDATEGAME;
+
+				AddGame_SetUpdateData(
+						app,
+						&table->str[table->ncol * state->table_data.selected_row]
+						);
+			}
+			break;
 	}
 }
 
 static void Catalog_HandleInputDeleteConfirm(App *app, CatalogState *state) {
-	if(app->ch == 'n' || app->ch == KEY_ESCAPE) {
-		state->input_state = CATALOG_INPUT_NAV;
-	}
+	switch(app->ch) {
+		case 'n':
+		case KEY_ESCAPE:
+			state->input_state = CATALOG_INPUT_NAV;
+			break;
 
-	if(app->ch == 'y' || app->ch == '\n') {
-		state->input_state = CATALOG_INPUT_NAV;
+		case 'y':
+		case '\n':
+			state->input_state = CATALOG_INPUT_NAV;
 
-		Catalog_HandleDeleteQuery(app, state);
-		Catalog_UpdateTable(app, state);
+			Catalog_HandleDeleteQuery(app, state);
+			Catalog_UpdateTable(app, state);
+			break;
 	}
 }
 

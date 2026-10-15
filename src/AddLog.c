@@ -219,7 +219,7 @@ void AddLog_SetUpdateData(App *app, char **data) {
 		strncpy(
 				str,
 				data[ADDLOG_UPDATE_STARTDATE + i],
-				MAX_LINE_SIZE
+				MAX_LINE_SIZE 
 			   );
 
 		int len = strlen(str);
@@ -228,17 +228,19 @@ void AddLog_SetUpdateData(App *app, char **data) {
 		state->form_data.inputs[i].cursor_pos = len + 1;
 	}
 
-	strncpy(state->chosen_game, data[ADDLOG_UPDATE_ID], LOG_STR_SIZE);
+	strncpy(state->chosen_game, data[ADDLOG_UPDATE_ID], MAX_LINE_SIZE);
+
+	state->form_data.input_selected = 0;
 }
 
 void AddLog_SetGame(App *app, const char *str) {
 	AddLogState *state = (AddLogState *) app->states[STATE_ADDLOG];
 
-	strncpy(state->chosen_game, str, LOG_STR_SIZE - 1);
+	strncpy(state->chosen_game, str, MAX_LINE_SIZE);
 
 	snprintf(
 			state->form_title_data,
-			LOG_STR_SIZE,
+			MAX_LINE_SIZE,
 			"  Log game: %s",
 			state->chosen_game
 			);

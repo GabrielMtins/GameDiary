@@ -5,8 +5,8 @@ static const char *sql_cmd_create_tables =
 "CREATE TABLE IF NOT EXISTS GameTable ("
 "id INTEGER PRIMARY KEY,"
 "Name VARCHAR(120) UNIQUE NOT NULL COLLATE NOCASE,"
-"Genre VARCHAR(120) COLLATE NOCASE,"
-"Platform VARCHAR(64) COLLATE NOCASE,"
+"Genre VARCHAR(32) COLLATE NOCASE,"
+"Platform VARCHAR(32) COLLATE NOCASE,"
 "Year YEAR"
 ");"
 
@@ -28,6 +28,12 @@ static const char *sql_cmd_insert_game =
 
 static const char *sql_cmd_delete_game =
 "DELETE FROM GameTable WHERE Name='%s';"
+;
+
+static const char *sql_cmd_update_game =
+"UPDATE GameTable "
+"SET Name='%s', Genre='%s', Platform='%s', Year='%s' "
+"WHERE Name='%s';"
 ;
 
 static const char *sql_cmd_get_game_table = 

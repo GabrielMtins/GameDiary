@@ -5,11 +5,11 @@
 
 #include "Table.h"
 
-#define MAX_LINE_SIZE 256
+#define MAX_LINE_SIZE 255
 #define FORM_MAX_INPUTS 10
 
 typedef struct {
-	char str[MAX_LINE_SIZE];
+	char str[MAX_LINE_SIZE + 1];
 	int len;
 
 	int offset;

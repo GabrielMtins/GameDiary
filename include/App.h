@@ -12,13 +12,14 @@
 #define KEY_ESCAPE 27
 
 #define FOR_STATE_LIST(DO) \
-	DO(STATE_CATALOG,   CatalogState, Catalog_Update) \
-	DO(STATE_LOGVIEW,   LogViewState, LogView_Update) \
-	DO(STATE_MENUBAR,   MenubarState, Menubar_Update) \
-	DO(STATE_ADDGAME,   AddGameState, AddGame_Update) \
-	DO(STATE_ADDLOG,    AddLogState,  AddLog_Update ) \
-	DO(STATE_UPDATELOG, int,          AddLog_Update ) \
-	DO(STATE_LOGO,      int,          Logo_Update)
+	DO(STATE_CATALOG,    CatalogState, Catalog_Update) \
+	DO(STATE_LOGVIEW,    LogViewState, LogView_Update) \
+	DO(STATE_MENUBAR,    MenubarState, Menubar_Update) \
+	DO(STATE_ADDGAME,    AddGameState, AddGame_Update) \
+	DO(STATE_UPDATEGAME, int,          AddGame_Update) \
+	DO(STATE_ADDLOG,     AddLogState,  AddLog_Update ) \
+	DO(STATE_UPDATELOG,  int,          AddLog_Update ) \
+	DO(STATE_LOGO,       int,          Logo_Update)
 
 #define LIMIT_VAR(x, min_x, max_x) (x = (x < (min_x)) ? (min_x) : ((x >= (max_x)) ? (max_x - 1) : x))
 
@@ -40,15 +41,17 @@ typedef struct MenubarState {
 
 typedef struct AddGameState {
 	FormWidgetData form_data;
+
+	char update_game[MAX_LINE_SIZE + 1];
+
 	const char *error_msg;
 } AddGameState;
 
-#define LOG_STR_SIZE 256
 typedef struct AddLogState {
 	FormWidgetData form_data;
 
-	char form_title_data[LOG_STR_SIZE];
-	char chosen_game[LOG_STR_SIZE];
+	char form_title_data[MAX_LINE_SIZE + 1];
+	char chosen_game[MAX_LINE_SIZE + 1];
 
 	const char *error_msg;
 } AddLogState;
@@ -64,6 +67,8 @@ void App_End(App *app);
 void App_ClearBottomWindow(App *app);
 
 bool App_IsNewState(App *app);
+
+void AddGame_SetUpdateData(App *app, char **data);
 
 void AddLog_SetUpdateData(App *app, char **data);
 

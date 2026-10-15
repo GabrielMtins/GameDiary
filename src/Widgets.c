@@ -68,7 +68,7 @@ void Widget_InputLine(WINDOW *win, const LineWidgetData *data) {
 }
 
 void LineWidgetData_HandleInput(LineWidgetData *data, int ch) {
-	if(isprint(ch) && data->len < MAX_LINE_SIZE - 1) {
+	if(isprint(ch) && data->len < MAX_LINE_SIZE) {
 		data->len++;
 
 		for(int i = data->len - 1; i >= data->cursor_pos + 1; i--) {

@@ -18,15 +18,18 @@ static const char *labels[] = {
 	" Year:"
 };
 
+#define ADD_GAME_NUM_INPUTS ((int) (sizeof(labels) / sizeof(const char *)))
+
 static void AddGame_SetUpForm(App *app, AddGameState *state);
 static void AddGame_CancelCallback(void *args);
 static void AddGame_OkCallback(void *args);
 static bool AddGame_VerifyInputs(App *app, AddGameState *state);
 static void AddGame_HandleAddQuery(App *app, AddGameState *state);
+static void AddGame_HandleUpdateQuery(App *app, AddGameState *state);
 static void AddGame_ShowErrorMsg(App *app, AddGameState *state);
 
 static void AddGame_SetUpForm(App *app, AddGameState *state) {
-	state->form_data.num_inputs = 4;
+	state->form_data.num_inputs = ADD_GAME_NUM_INPUTS;
 
 	state->form_data.form_title = "  Write game information.";
 	state->form_data.labels = labels;
@@ -51,7 +54,15 @@ static void AddGame_OkCallback(void *args) {
 		return;
 	}
 
-	AddGame_HandleAddQuery(app, state);
+	switch(app->current_state) {
+		case STATE_UPDATEGAME:
+			AddGame_HandleUpdateQuery(app, state);
+			break;
+
+		case STATE_ADDGAME:
+			AddGame_HandleAddQuery(app, state);
+			break;
+	}
 
 	app->next_state = STATE_CATALOG;
 }
@@ -104,6 +115,31 @@ static void AddGame_HandleAddQuery(App *app, AddGameState *state) {
 	free(cmd);
 }
 
+static void AddGame_HandleUpdateQuery(App *app, AddGameState *state) {
+	char *cmd;
+
+	FormWidgetData_AddTerminatorToInputs(&state->form_data);
+
+	cmd = safe_sprintf(
+			sql_cmd_update_game,
+			state->form_data.inputs[0].str,
+			state->form_data.inputs[1].str,
+			state->form_data.inputs[2].str,
+			state->form_data.inputs[3].str,
+			state->update_game
+			);
+
+	sqlite3_exec(
+			app->db,
+			cmd,
+			NULL,
+			NULL,
+			NULL
+			);
+
+	free(cmd);
+}
+
 static void AddGame_ShowErrorMsg(App *app, AddGameState *state) {
 	if(state->error_msg == NULL) return;
 
@@ -127,7 +163,10 @@ void AddGame_Update(App *app) {
 	if(App_IsNewState(app)) {
 		state->form_data.should_clear = true;
 		state->error_msg = NULL;
-		FormWidgetData_ResetInput(&state->form_data);
+
+		if(app->current_state == STATE_ADDGAME) {
+			FormWidgetData_ResetInput(&state->form_data);
+		}
 	}
 
 	Widget_Form(
@@ -137,4 +176,25 @@ void AddGame_Update(App *app) {
 			);
 
 	AddGame_ShowErrorMsg(app, state);
+}
+
+void AddGame_SetUpdateData(App *app, char **data) {
+	AddGameState *state = (AddGameState *) app->states[STATE_ADDGAME];
+
+	for(int i = 0; i < ADD_GAME_NUM_INPUTS; i++) {
+		LineWidgetData *line_data = &state->form_data.inputs[i];
+
+		strncpy(
+				line_data->str,
+				data[i],
+				MAX_LINE_SIZE
+				);
+
+		line_data->len = strlen(line_data->str);
+		line_data->cursor_pos = line_data->len + 1;
+	}
+
+	strncpy(state->update_game, data[ADDGAME_INPUT_NAME], MAX_LINE_SIZE);
+
+	state->form_data.input_selected = 0;
 }

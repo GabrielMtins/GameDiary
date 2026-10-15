@@ -7,7 +7,8 @@
 #include "App.h"
 
 /* TODO
- * - Adicionar funcao de atualizar dados do jogo.
+ * - estatisticas
+ * - help/about
  */
 
 /*
