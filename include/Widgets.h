@@ -72,6 +72,6 @@ void Widget_Table(WINDOW *win, TableWidgetData *data);
 
 void TableWidgetData_HandleInput(TableWidgetData *data, int ch);
 
-void Widget_HorizontalBarGraph(WINDOW *win, Table *table, int num_rows_graph, int label_width);
+void Widget_HorizontalBarGraph(WINDOW *win, Table *table, int num_rows_graph, int desc_width, int num_width);
 
 #endif

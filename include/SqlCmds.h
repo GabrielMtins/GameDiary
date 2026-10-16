@@ -76,4 +76,12 @@ static const char *sql_cmd_get_platform_count =
 "ORDER BY qt DESC;"
 ;
 
+static const char *sql_cmd_get_genre_count =
+"SELECT g.Genre, COUNT(*) as qt "
+"FROM (SELECT DISTINCT GameId FROM LogTable) l "
+"INNER JOIN GameTable g on g.id = l.GameId "
+"GROUP BY g.Genre "
+"ORDER BY qt DESC;"
+;
+
 #endif

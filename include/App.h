@@ -19,6 +19,7 @@
 	DO(STATE_UPDATEGAME, int,          AddGame_Update) \
 	DO(STATE_ADDLOG,     AddLogState,  AddLog_Update ) \
 	DO(STATE_UPDATELOG,  int,          AddLog_Update ) \
+	DO(STATE_STATS,      StatsState,   Stats_Update)   \
 	DO(STATE_LOGO,       int,          Logo_Update)
 
 #define LIMIT_VAR(x, min_x, max_x) (x = (x < (min_x)) ? (min_x) : ((x >= (max_x)) ? (max_x - 1) : x))
@@ -55,6 +56,10 @@ typedef struct AddLogState {
 
 	const char *error_msg;
 } AddLogState;
+
+typedef struct {
+	int current_graph;
+} StatsState;
 
 typedef struct App App;
 

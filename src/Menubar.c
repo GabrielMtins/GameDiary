@@ -13,7 +13,7 @@ static const char *button_labels[] = {
 static const int button_to_state[] = {
 	STATE_CATALOG,
 	STATE_LOGVIEW,
-	STATE_NONE,
+	STATE_STATS,
 	STATE_NONE,
 };
 
