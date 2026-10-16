@@ -1,6 +1,5 @@
 #include "App.h"
 #include "SqlCmds.h"
-#include "Util.h"
 
 static const int cols_width[] = {
 	0,
@@ -90,7 +89,7 @@ static void LogView_HandleDeleteQuery(App *app, LogViewState *state) {
 
 	const char *selected_id = table->str[table->ncol * state->table_data.selected_row];
 
-	cmd = safe_sprintf(
+	cmd = sqlite3_mprintf(
 			sql_cmd_delete_log,
 			selected_id
 			);
@@ -103,7 +102,7 @@ static void LogView_HandleDeleteQuery(App *app, LogViewState *state) {
 			NULL
 			);
 
-	free(cmd);
+	sqlite3_free(cmd);
 }
 
 static void LogView_DrawTable(App *app, LogViewState *state) {

@@ -23,17 +23,17 @@ static const char *sql_cmd_create_tables =
 ;
 
 static const char *sql_cmd_insert_game = 
-"INSERT INTO GameTable (Name, Genre, Platform, Year) VALUES ('%s', '%s', '%s', '%s');"
+"INSERT INTO GameTable (Name, Genre, Platform, Year) VALUES (%Q, %Q, %Q, %d);"
 ;
 
 static const char *sql_cmd_delete_game =
-"DELETE FROM GameTable WHERE Name='%s';"
+"DELETE FROM GameTable WHERE Name=%Q;"
 ;
 
 static const char *sql_cmd_update_game =
 "UPDATE GameTable "
-"SET Name='%s', Genre='%s', Platform='%s', Year='%s' "
-"WHERE Name='%s';"
+"SET Name=%Q, Genre=%Q, Platform=%Q, Year=%d "
+"WHERE Name=%Q;"
 ;
 
 static const char *sql_cmd_get_game_table = 
@@ -42,8 +42,8 @@ static const char *sql_cmd_get_game_table =
 
 static const char *sql_cmd_insert_log =
 "INSERT INTO LogTable (GameId, StartPlayDate, EndPlayDate, Score) VALUES "
-"((SELECT id FROM GameTable Where Name='%s'),"
-"'%s', '%s', '%s');"
+"((SELECT id FROM GameTable Where Name=%Q),"
+"%Q, %Q, %d);"
 ;
 
 static const char *sql_cmd_delete_log =
@@ -52,7 +52,7 @@ static const char *sql_cmd_delete_log =
 
 static const char *sql_cmd_update_log =
 "UPDATE LogTable "
-"SET StartPlayDate='%s', EndPlayDate='%s', Score='%s' "
+"SET StartPlayDate=%Q, EndPlayDate=%Q, Score=%d "
 "WHERE id=%s;"
 ;
 

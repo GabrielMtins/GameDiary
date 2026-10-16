@@ -1,6 +1,5 @@
 #include "App.h"
 #include "SqlCmds.h"
-#include "Util.h"
 
 #include <ctype.h>
 
@@ -96,12 +95,12 @@ static void AddGame_HandleAddQuery(App *app, AddGameState *state) {
 
 	FormWidgetData_AddTerminatorToInputs(&state->form_data);
 
-	cmd = safe_sprintf(
+	cmd = sqlite3_mprintf(
 			sql_cmd_insert_game,
 			state->form_data.inputs[0].str,
 			state->form_data.inputs[1].str,
 			state->form_data.inputs[2].str,
-			state->form_data.inputs[3].str
+			strtol(state->form_data.inputs[3].str, NULL, 10)
 			);
 
 	sqlite3_exec(
@@ -112,7 +111,7 @@ static void AddGame_HandleAddQuery(App *app, AddGameState *state) {
 			NULL
 			);
 
-	free(cmd);
+	sqlite3_free(cmd);
 }
 
 static void AddGame_HandleUpdateQuery(App *app, AddGameState *state) {
@@ -120,12 +119,12 @@ static void AddGame_HandleUpdateQuery(App *app, AddGameState *state) {
 
 	FormWidgetData_AddTerminatorToInputs(&state->form_data);
 
-	cmd = safe_sprintf(
+	cmd = sqlite3_mprintf(
 			sql_cmd_update_game,
 			state->form_data.inputs[0].str,
 			state->form_data.inputs[1].str,
 			state->form_data.inputs[2].str,
-			state->form_data.inputs[3].str,
+			strtol(state->form_data.inputs[3].str, NULL, 10),
 			state->update_game
 			);
 
@@ -137,7 +136,7 @@ static void AddGame_HandleUpdateQuery(App *app, AddGameState *state) {
 			NULL
 			);
 
-	free(cmd);
+	sqlite3_free(cmd);
 }
 
 static void AddGame_ShowErrorMsg(App *app, AddGameState *state) {

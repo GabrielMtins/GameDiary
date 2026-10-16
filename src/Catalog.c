@@ -1,6 +1,5 @@
 #include "App.h"
 #include "SqlCmds.h"
-#include "Util.h"
 
 enum InputState {
 	CATALOG_INPUT_NAV,
@@ -137,7 +136,7 @@ static void Catalog_HandleInput(App *app, CatalogState *state) {
 static void Catalog_HandleDeleteQuery(App *app, CatalogState *state) {
 	char *cmd;
 
-	cmd = safe_sprintf(sql_cmd_delete_game, Catalog_GetSelectedGameName(app, state));
+	cmd = sqlite3_mprintf(sql_cmd_delete_game, Catalog_GetSelectedGameName(app, state));
 	
 	sqlite3_exec(
 			app->db,
@@ -147,7 +146,7 @@ static void Catalog_HandleDeleteQuery(App *app, CatalogState *state) {
 			NULL
 			);
 
-	free(cmd);
+	sqlite3_free(cmd);
 }
 
 void Catalog_Update(App *app) {
