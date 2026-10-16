@@ -6,6 +6,4 @@
 
 char * safe_sprintf(const char *format, ...);
 
-bool util_isdecimal(const char *tmp);
-
 #endif

@@ -68,4 +68,12 @@ static const char *sql_cmd_get_log_table =
 "ORDER BY l.StartPlayDate DESC;"
 ;
 
+static const char *sql_cmd_get_platform_count =
+"SELECT g.Platform as Platforms, COUNT(*) as qt "
+"FROM (SELECT DISTINCT GameId FROM LogTable) l "
+"INNER JOIN GameTable g on g.id = l.GameId "
+"GROUP BY g.Platform "
+"ORDER BY qt DESC;"
+;
+
 #endif
