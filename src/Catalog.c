@@ -69,7 +69,9 @@ static void Catalog_DrawTable(App *app, CatalogState *state) {
 static void Catalog_HandleInputNav(App *app, CatalogState *state) {
 	TableWidgetData_HandleInput(&state->table_data, app->ch);
 
-	bool is_table_valid = state->table_data.working_table.nrow > 1;
+	Table *table = &state->table_data.working_table;
+	bool is_table_valid = table->nrow > 1;
+
 
 	switch(app->ch) {
 		case 'a':
@@ -77,30 +79,28 @@ static void Catalog_HandleInputNav(App *app, CatalogState *state) {
 			break;
 
 		case 'i':
-			if(is_table_valid) {
-				AddLog_SetGame(app, Catalog_GetSelectedGameName(app, state));
-				app->next_state = STATE_ADDLOG;
-			}
+			if(!is_table_valid) break;
+
+			AddLog_SetGame(app, Catalog_GetSelectedGameName(app, state));
+			app->next_state = STATE_ADDLOG;
 			break;
 
 		case 'd':
-			if(is_table_valid) {
-				state->input_state = CATALOG_INPUT_DELETE_CONFIRM;
-			}
+			if(!is_table_valid) break;
+
+			state->input_state = CATALOG_INPUT_DELETE_CONFIRM;
 			break;
 
 		case 'c':
 		case 'r':
-			if(is_table_valid) {
-				Table *table = &state->table_data.working_table;
+			if(!is_table_valid) break;
 
-				app->next_state = STATE_UPDATEGAME;
+			app->next_state = STATE_UPDATEGAME;
 
-				AddGame_SetUpdateData(
-						app,
-						&table->str[table->ncol * state->table_data.selected_row]
-						);
-			}
+			AddGame_SetUpdateData(
+					app,
+					&table->str[table->ncol * state->table_data.selected_row]
+					);
 			break;
 	}
 }

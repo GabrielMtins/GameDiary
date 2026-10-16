@@ -56,15 +56,19 @@ static void LogView_HandleInputNav(App *app, LogViewState *state) {
 }
 
 static void LogView_HandleInputDelete(App *app, LogViewState *state) {
-	if(app->ch == 'n' || app->ch == KEY_ESCAPE) {
-		state->input_state = LOGVIEW_INPUT_NAV;
-	}
+	switch(app->ch) {
+		case 'n':
+		case KEY_ESCAPE:
+			state->input_state = LOGVIEW_INPUT_NAV;
+			break;
 
-	if(app->ch == '\n' || app->ch == 'y') {
-		state->input_state = LOGVIEW_INPUT_NAV;
+		case '\n':
+		case 'y':
+			state->input_state = LOGVIEW_INPUT_NAV;
 
-		LogView_HandleDeleteQuery(app, state);
-		LogView_UpdateTable(app, state);
+			LogView_HandleDeleteQuery(app, state);
+			LogView_UpdateTable(app, state);
+			break;
 	}
 }
 

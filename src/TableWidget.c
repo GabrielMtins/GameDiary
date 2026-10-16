@@ -90,12 +90,16 @@ void Widget_Table(WINDOW *win, TableWidgetData *data) {
 }
 
 void TableWidgetData_HandleInput(TableWidgetData *data, int ch) {
-	if(ch == 'j' || ch == KEY_DOWN) {
-		data->selected_row++;
-	}
+	switch(ch) {
+		case 'j':
+		case KEY_DOWN:
+			data->selected_row++;
+			break;
 
-	if(ch == 'k' || ch == KEY_UP) {
-		data->selected_row--;
+		case 'k':
+		case KEY_UP:
+			data->selected_row--;
+			break;
 	}
 
 	LIMIT_VAR(data->selected_row, 1, data->working_table.nrow);

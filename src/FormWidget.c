@@ -83,28 +83,36 @@ static void FormWidget_SetUpInputWidget(WINDOW *win, FormWidgetData *data) {
 }
 
 static void FormWidget_HandleInput(FormWidgetData *data, int ch) {
-	if((ch == '\n' && data->input_selected == FORM_BUTTON_CANCEL) || ch == KEY_ESCAPE) {
-		if(data->cancel_callback != NULL) {
+	switch(ch) {
+		case KEY_ESCAPE:
+			if(data->cancel_callback == NULL) break;
+
 			data->cancel_callback(data->callback_args);
-		}
+			break;
 
-		return;
-	}
+		case '\n':
+			if(data->input_selected == FORM_BUTTON_CANCEL) {
+				if(data->cancel_callback == NULL) break;
 
-	if(ch == '\n' && data->input_selected == FORM_BUTTON_OK) {
-		if(data->ok_callback != NULL) {
-			data->ok_callback(data->callback_args);
-		}
+				data->cancel_callback(data->callback_args);
+			} else if(data->input_selected == FORM_BUTTON_OK) {
+				if(data->ok_callback == NULL) break;
 
-		return;
-	}
+				data->ok_callback(data->callback_args);
+			} else {
+				data->input_selected++;
+			}
+			break;
 
-	if(ch == KEY_DOWN || ch == '\n' || ch == '\t') {
-		data->input_selected++;
-	}
+		case KEY_DOWN:
+		case '\t':
+			data->input_selected++;
+			break;
 
-	if(ch == KEY_UP || ch == KEY_BTAB) {
-		data->input_selected--;
+		case KEY_UP:
+		case KEY_BTAB:
+			data->input_selected--;
+			break;
 	}
 
 	LIMIT_VAR(data->input_selected, 0, data->num_inputs + FORM_WIDGET_NUM_BUTTONS);
