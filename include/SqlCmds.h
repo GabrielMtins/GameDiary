@@ -7,7 +7,7 @@ static const char *sql_cmd_create_tables =
 "Name VARCHAR(120) UNIQUE NOT NULL COLLATE NOCASE,"
 "Genre VARCHAR(32) COLLATE NOCASE,"
 "Platform VARCHAR(32) COLLATE NOCASE,"
-"Year YEAR"
+"Year INTEGER"
 ");"
 
 "CREATE TABLE IF NOT EXISTS LogTable ("
