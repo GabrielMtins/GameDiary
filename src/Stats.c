@@ -5,9 +5,7 @@ void Stats_Update(App *app) {
 		return;
 	}
 
-	app->content_window.owner_state = STATE_STATS;
-
-	WINDOW *win = app->content_window.win;
+	WINDOW *win = app->content_window;
 	wclear(win);
 	wmove(win, 0, 0);
 

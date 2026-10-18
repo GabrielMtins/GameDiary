@@ -22,9 +22,6 @@ static void LogView_DrawDeleteConfirmation(App *app, LogViewState *state);
 
 static void LogView_UpdateTable(App *app, LogViewState *state) {
 	DB_GetLogTable(app->db, &state->table_data.working_table);
-
-	state->table_data.msg_no_entries = "  No diary entries under this category.";
-	state->table_data.col_width_values = cols_width;
 }
 
 static void LogView_HandleInputNav(App *app, LogViewState *state) {
@@ -81,7 +78,7 @@ static void LogView_HandleInput(App *app, LogViewState *state) {
 }
 
 static void LogView_DrawTable(App *app, LogViewState *state) {
-	WINDOW *win = app->content_window.win;
+	WINDOW *win = app->content_window;
 
 	wmove(win, 0, 0);
 	Widget_Table(win, &state->table_data);
@@ -94,7 +91,7 @@ static void LogView_DrawTable(App *app, LogViewState *state) {
 }
 
 static void LogView_DrawDeleteConfirmation(App *app, LogViewState *state) {
-	WINDOW *win = app->bottom_window.win;
+	WINDOW *win = app->bottom_window;
 	(void) state;
 	
 	wmove(win, 0, 0);
@@ -103,15 +100,21 @@ static void LogView_DrawDeleteConfirmation(App *app, LogViewState *state) {
 	Widget_Space(win, -1);
 }
 
+void LogView_Init(App *app) {
+	LogViewState *state = app->states[STATE_LOGVIEW];
+
+	state->input_state = LOGVIEW_INPUT_NAV;
+	
+	TableWidgetData_Init(&state->table_data);
+
+	state->table_data.msg_no_entries = "  There are no games under this category.";
+	state->table_data.col_width_values = cols_width;
+
+	LogView_UpdateTable(app, state);
+}
+
 void LogView_Update(App *app) {
 	LogViewState *state = (LogViewState *) app->states[STATE_LOGVIEW];
-
-	if(App_IsNewState(app)) {
-		LogView_UpdateTable(app, state);
-
-		app->content_window.owner_state = STATE_LOGVIEW;
-		state->input_state = LOGVIEW_INPUT_NAV;
-	}
 
 	LogView_HandleInput(app, state);
 	LogView_DrawTable(app, state);

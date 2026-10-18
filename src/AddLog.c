@@ -22,25 +22,12 @@ static const char *labels[] = {
 	" Score: ",
 };
 
-static void AddLog_SetUpForm(App *app, AddLogState *state);
 static bool AddLog_VerifyIfInputIsDate(const LineWidgetData *data);
 static bool AddLog_VerifyInputs(App *app, AddLogState *state);
 static void AddLog_BackToPrevState(App *app);
 static void AddLog_OkCallback(void *args);
 static void AddLog_CancelCallback(void *args);
 static void AddLog_ShowErrorMsg(App *app, AddLogState *state);
-
-static void AddLog_SetUpForm(App *app, AddLogState *state) {
-	state->form_data.num_inputs = 3;
-
-	state->form_data.form_title = state->form_title_data;
-	state->form_data.labels = labels;
-	state->form_data.labels_width = 13;
-
-	state->form_data.callback_args = (void *) app;
-	state->form_data.cancel_callback = AddLog_CancelCallback;
-	state->form_data.ok_callback = AddLog_OkCallback;
-}
 
 static void AddLog_BackToPrevState(App *app) {
 	switch(app->current_state) {
@@ -161,7 +148,7 @@ static void AddLog_CancelCallback(void *args) {
 static void AddLog_ShowErrorMsg(App *app, AddLogState *state) {
 	if(state->error_msg == NULL) return;
 
-	WINDOW *win = app->bottom_window.win;
+	WINDOW *win = app->bottom_window;
 
 	wmove(win, 0, 0);
 	wattrset(win, A_NORMAL);
@@ -209,26 +196,35 @@ void AddLog_SetGame(App *app, const char *str) {
 			);
 }
 
-void AddLog_Update(App *app) {
+void AddLog_Init(App *app) {
 	AddLogState *state = (AddLogState *) app->states[STATE_ADDLOG];
 
 	if(state->form_data.num_inputs == 0) {
-		AddLog_SetUpForm(app, state);
+		FormWidgetData_Init(&state->form_data);
+
+		state->form_data.num_inputs = 3;
+	
+		state->form_data.form_title = state->form_title_data;
+		state->form_data.labels = labels;
+		state->form_data.labels_width = 13;
+	
+		state->form_data.callback_args = (void *) app;
+		state->form_data.cancel_callback = AddLog_CancelCallback;
+		state->form_data.ok_callback = AddLog_OkCallback;
 	}
 
-	if(App_IsNewState(app)) {
-		state->form_data.should_clear = true;
-		app->content_window.owner_state = STATE_ADDLOG;
+	state->error_msg = NULL;
 
-		if(app->current_state == STATE_ADDLOG) {
-			FormWidgetData_ResetInput(&state->form_data);
-		}
-
-		state->error_msg = NULL;
+	if(app->current_state == STATE_ADDLOG) {
+		FormWidgetData_ResetInput(&state->form_data);
 	}
+}
+
+void AddLog_Update(App *app) {
+	AddLogState *state = (AddLogState *) app->states[STATE_ADDLOG];
 
 	Widget_Form(
-			app->content_window.win,
+			app->content_window,
 			&state->form_data,
 			app->ch
 			);

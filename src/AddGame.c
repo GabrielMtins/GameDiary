@@ -18,23 +18,10 @@ static const char *labels[] = {
 
 #define ADD_GAME_NUM_INPUTS ((int) (sizeof(labels) / sizeof(const char *)))
 
-static void AddGame_SetUpForm(App *app, AddGameState *state);
 static void AddGame_CancelCallback(void *args);
 static void AddGame_OkCallback(void *args);
 static bool AddGame_VerifyInputs(App *app, AddGameState *state);
 static void AddGame_ShowErrorMsg(App *app, AddGameState *state);
-
-static void AddGame_SetUpForm(App *app, AddGameState *state) {
-	state->form_data.num_inputs = ADD_GAME_NUM_INPUTS;
-
-	state->form_data.form_title = "  Write game information.";
-	state->form_data.labels = labels;
-	state->form_data.labels_width = 11;
-
-	state->form_data.callback_args = (void *) app;
-	state->form_data.cancel_callback = AddGame_CancelCallback;
-	state->form_data.ok_callback = AddGame_OkCallback;
-}
 
 static void AddGame_CancelCallback(void *args) {
 	App *app = (App *) args;
@@ -105,7 +92,7 @@ static bool AddGame_VerifyInputs(App *app, AddGameState *state) {
 static void AddGame_ShowErrorMsg(App *app, AddGameState *state) {
 	if(state->error_msg == NULL) return;
 
-	WINDOW *win = app->bottom_window.win;
+	WINDOW *win = app->bottom_window;
 
 	wmove(win, 0, 0);
 	wattrset(win, A_NORMAL);
@@ -115,24 +102,34 @@ static void AddGame_ShowErrorMsg(App *app, AddGameState *state) {
 	Widget_Space(win, -1);
 }
 
+void AddGame_Init(App *app) {
+	AddGameState *state = app->states[STATE_ADDGAME];
+
+	if(state->form_data.num_inputs == 0) {
+		FormWidgetData_Init(&state->form_data);
+		state->form_data.num_inputs = ADD_GAME_NUM_INPUTS;
+	
+		state->form_data.form_title = "  Write game information.";
+		state->form_data.labels = labels;
+		state->form_data.labels_width = 11;
+	
+		state->form_data.callback_args = (void *) app;
+		state->form_data.cancel_callback = AddGame_CancelCallback;
+		state->form_data.ok_callback = AddGame_OkCallback;
+	}
+
+	state->error_msg = NULL;
+
+	if(app->current_state == STATE_ADDGAME) {
+		FormWidgetData_ResetInput(&state->form_data);
+	}
+}
+
 void AddGame_Update(App *app) {
 	AddGameState *state = (AddGameState *) app->states[STATE_ADDGAME];
 
-	if(state->form_data.num_inputs == 0) {
-		AddGame_SetUpForm(app, state);
-	}
-
-	if(App_IsNewState(app)) {
-		state->form_data.should_clear = true;
-		state->error_msg = NULL;
-
-		if(app->current_state == STATE_ADDGAME) {
-			FormWidgetData_ResetInput(&state->form_data);
-		}
-	}
-
 	Widget_Form(
-			app->content_window.win,
+			app->content_window,
 			&state->form_data,
 			app->ch
 			);

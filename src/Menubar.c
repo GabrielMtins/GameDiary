@@ -63,7 +63,7 @@ static void Menubar_HandleInput(App *app, MenubarState *state) {
 }
 
 static void Menubar_Draw(App *app, MenubarState *state) {
-	WINDOW *win = app->top_window.win;
+	WINDOW *win = app->top_window;
 
 	wmove(win, 0, 0);
 	wattrset(win, A_NORMAL);

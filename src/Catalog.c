@@ -24,7 +24,7 @@ static void Catalog_UpdateTable(App *app, CatalogState *state) {
 }
 
 static void Catalog_DrawDeleteConfirmation(App *app) {
-	WINDOW *win = app->bottom_window.win;
+	WINDOW *win = app->bottom_window;
 	
 	wmove(win, 0, 0);
 	wattrset(win, A_NORMAL);
@@ -35,7 +35,7 @@ static void Catalog_DrawDeleteConfirmation(App *app) {
 static void Catalog_DrawTable(App *app, CatalogState *state) {
 	WINDOW *win;
 
-	win = app->content_window.win;
+	win = app->content_window;
 
 	wmove(win, 0, 0);
 	Widget_Table(win, &state->table_data);
@@ -127,16 +127,12 @@ void Catalog_Init(App *app) {
 
 	state->table_data.msg_no_entries = "  There are no games under this category.";
 	state->table_data.col_width_values = cols_width;
+
+	Catalog_UpdateTable(app, state);
 }
 
 void Catalog_Update(App *app) {
 	CatalogState *state = app->states[STATE_CATALOG];
-
-	if(App_IsNewState(app)) {
-		Catalog_UpdateTable(app, state);
-
-		state->input_state = CATALOG_INPUT_NAV;
-	}
 
 	Catalog_HandleInput(app, state);
 

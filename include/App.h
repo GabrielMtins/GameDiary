@@ -1,7 +1,6 @@
 #ifndef APP_H
 #define APP_H
 
-#include "Window.h"
 #include "Widgets.h"
 #include <sqlite3.h>
 
@@ -12,11 +11,11 @@
 
 #define FOR_STATE_LIST(DO) \
 	DO(STATE_CATALOG,    CatalogState, Catalog_Init, Catalog_Update) \
-	DO(STATE_LOGVIEW,    LogViewState, State_NullInit, LogView_Update) \
-	DO(STATE_ADDGAME,    AddGameState, State_NullInit, AddGame_Update) \
-	DO(STATE_UPDATEGAME, int,          State_NullInit, AddGame_Update) \
-	DO(STATE_ADDLOG,     AddLogState,  State_NullInit, AddLog_Update ) \
-	DO(STATE_UPDATELOG,  int,          State_NullInit, AddLog_Update ) \
+	DO(STATE_LOGVIEW,    LogViewState, LogView_Init, LogView_Update) \
+	DO(STATE_ADDGAME,    AddGameState, AddGame_Init, AddGame_Update) \
+	DO(STATE_UPDATEGAME, int,          AddGame_Init, AddGame_Update) \
+	DO(STATE_ADDLOG,     AddLogState,  AddLog_Init,  AddLog_Update ) \
+	DO(STATE_UPDATELOG,  int,          AddLog_Init,  AddLog_Update ) \
 	DO(STATE_STATS,      StatsState,   State_NullInit, Stats_Update)   \
 	DO(STATE_MENUBAR,    MenubarState, State_NullInit, Menubar_Update) \
 	DO(STATE_LOGO,       int,          State_NullInit, Logo_Update)
@@ -80,11 +79,7 @@ void AddLog_SetGame(App *app, const char *str);
 
 /* ============= MACROS EXPANDING ============= */
 
-#define EXPAND_AS_FUNCTION(type, state, init, update) void init(App *app);
-FOR_STATE_LIST(EXPAND_AS_FUNCTION)
-#undef EXPAND_AS_FUNCTION
-
-#define EXPAND_AS_FUNCTION(type, state, init, update) void update(App *app);
+#define EXPAND_AS_FUNCTION(type, state, init, update) void init(App *app); void update(App *app);
 FOR_STATE_LIST(EXPAND_AS_FUNCTION)
 #undef EXPAND_AS_FUNCTION
 
@@ -97,10 +92,10 @@ typedef enum {
 #undef EXPAND_AS_ENUM
 
 struct App {
-	Window content_window;
-	Window top_window;
-	Window bottom_window;
-	Window logo_window;
+	WINDOW *content_window;
+	WINDOW *top_window;
+	WINDOW *bottom_window;
+	WINDOW *logo_window;
 
 	void *states[NUM_STATES];
 

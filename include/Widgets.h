@@ -30,8 +30,6 @@ typedef struct {
 	const char **labels;
 	int labels_width;
 
-	int should_clear;
-
 	void (*cancel_callback)(void *);
 	void (*ok_callback)(void *);
 

@@ -126,10 +126,9 @@ static void FormWidget_HandleInput(FormWidgetData *data, int ch) {
 }
 
 void Widget_Form(WINDOW *win, FormWidgetData *data, int ch) {
-	if(data->should_clear || ch == KEY_RESIZE) {
+	if(ch == KEY_RESIZE) {
 		FormWidget_SetUpInputWidget(win, data);
 		FormWidget_DrawClear(win, data);
-		data->should_clear = 0;
 	}
 
 	FormWidget_HandleInput(data, ch);

@@ -7,6 +7,7 @@
 #define LOGO_WINDOW_WIDTH 11
 
 static void App_HandleResize(App *app);
+static void App_InitState(App *app, int state);
 static void App_UpdateState(App *app, int state);
 static void App_BuildWindow(App *app);
 static void App_RefreshWindows(App *app);
@@ -15,10 +16,19 @@ static void App_Loop(App *app);
 static void App_HandleResize(App *app) {
 	App_BuildWindow(app);
 
-	App_UpdateState(app, app->bottom_window.owner_state);
-	App_UpdateState(app, app->top_window.owner_state);
-	App_UpdateState(app, app->content_window.owner_state);
-	App_UpdateState(app, app->logo_window.owner_state);
+	wclear(app->content_window);
+	Logo_Update(app);
+}
+
+static void App_InitState(App *app, int state) {
+	#define EXPAND_AS_CASE(type, state, init, update) case type: init(app); break;
+	switch(state) {
+		FOR_STATE_LIST(EXPAND_AS_CASE)
+
+		default:
+			break;
+	}
+	#undef EXPAND_AS_CASE
 }
 
 static void App_UpdateState(App *app, int state) {
@@ -37,18 +47,23 @@ static void App_BuildWindow(App *app) {
 	getmaxyx(stdscr, height, width);
 	curs_set(0);
 
-	Window_Create(&app->top_window, 0, 0, width, 1);
-	Window_Create(&app->content_window, 0, 1, width, height - 2);
-	Window_Create(&app->logo_window, 0, height - 1, width, 1);
-	Window_Create(&app->bottom_window, LOGO_WINDOW_WIDTH, height - 1, width - LOGO_WINDOW_WIDTH, 1);
+	if(app->top_window != NULL) delwin(app->top_window);
+	if(app->content_window != NULL) delwin(app->content_window);
+	if(app->logo_window != NULL) delwin(app->logo_window);
+	if(app->bottom_window != NULL) delwin(app->bottom_window);
+
+	app->top_window = newwin(1, width, 0, 0);
+	app->content_window = newwin(height - 2, width, 1, 0);
+	app->logo_window = newwin(1, width, height - 1, 0);
+	app->bottom_window = newwin(1, width - LOGO_WINDOW_WIDTH, height - 1, LOGO_WINDOW_WIDTH);
 }
 
 static void App_RefreshWindows(App *app) {
 	refresh();
-	wrefresh(app->content_window.win);
-	wrefresh(app->top_window.win);
-	wrefresh(app->bottom_window.win);
-	wrefresh(app->logo_window.win);
+	wrefresh(app->content_window);
+	wrefresh(app->top_window);
+	wrefresh(app->bottom_window);
+	wrefresh(app->logo_window);
 }
 
 static void App_Loop(App *app) {
@@ -57,7 +72,6 @@ static void App_Loop(App *app) {
 	}
 
 	Menubar_Update(app);
-
 	App_UpdateState(app, app->current_state);
 	App_RefreshWindows(app);
 
@@ -66,6 +80,8 @@ static void App_Loop(App *app) {
 
 	if(app->prev_state != app->current_state) {
 		app->ch = 0;
+		wclear(app->content_window);
+		App_InitState(app, app->current_state);
 		App_UpdateState(app, app->current_state);
 		App_RefreshWindows(app);
 	}
@@ -92,9 +108,6 @@ void App_Init(App *app) {
 	FOR_STATE_LIST(EXPAND_AS_MALLOC)
 	#undef EXPAND_AS_MALLOC
 
-	#define EXPAND_AS_INIT(type, state, init, update)
-	#undef EXPAND_AS_INIT
-
 	app->quit = 0;
 	app->ch = 0;
 
@@ -102,11 +115,7 @@ void App_Init(App *app) {
 	app->current_state = STATE_CATALOG;
 	app->next_state = app->current_state;
 
-	app->content_window.owner_state = app->current_state;
-	app->top_window.owner_state = STATE_MENUBAR;
-	app->bottom_window.owner_state = STATE_NONE;
-	app->logo_window.owner_state = STATE_LOGO;
-
+	App_InitState(app, app->current_state);
 	App_HandleResize(app);
 	refresh();
 }
@@ -120,10 +129,10 @@ void App_Run(App *app) {
 void App_End(App *app) {
 	for(int i = 0; i < NUM_STATES; i++) free(app->states[i]);
 
-	Window_Destroy(&app->top_window);
-	Window_Destroy(&app->bottom_window);
-	Window_Destroy(&app->content_window);
-	Window_Destroy(&app->logo_window);
+	delwin(app->top_window);
+	delwin(app->bottom_window);
+	delwin(app->content_window);
+	delwin(app->logo_window);
 
 	endwin();
 
@@ -131,7 +140,7 @@ void App_End(App *app) {
 }
 
 void App_ClearBottomWindow(App *app) {
-	WINDOW *win = app->bottom_window.win;
+	WINDOW *win = app->bottom_window;
 
 	wmove(win, 0, 0);
 	wattrset(win, A_REVERSE);
@@ -148,7 +157,7 @@ void State_NullInit(App *app) {
 }
 
 void Logo_Update(App *app) {
-	WINDOW *win = app->logo_window.win;
+	WINDOW *win = app->logo_window;
 
 	wmove(win, 0, 0);
 	wattrset(win, A_REVERSE);
