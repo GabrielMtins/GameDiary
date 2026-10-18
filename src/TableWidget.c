@@ -20,7 +20,7 @@ static void TableWidgetData_DrawLine(WINDOW *win, const TableWidgetData* data, i
 
 
 		wmove(win, window_y, count);
-		waddch(win, '|');
+		waddch(win, ACS_VLINE);
 
 		wmove(win, window_y, count + 2);
 
@@ -34,7 +34,7 @@ static void TableWidgetData_DrawLine(WINDOW *win, const TableWidgetData* data, i
 	}
 
 	wmove(win, window_y, getmaxx(win) - 1);
-	waddch(win, '|');
+	waddch(win, ACS_VLINE);
 }
 
 void Widget_Table(WINDOW *win, TableWidgetData *data) {
@@ -75,7 +75,7 @@ void Widget_Table(WINDOW *win, TableWidgetData *data) {
 		}
 
 		if(current_row == data->selected_row) {
-			wattrset(win, A_REVERSE | A_BOLD | A_DIM);
+			wattrset(win, A_REVERSE | A_BOLD);
 		} else {
 			wattrset(win, A_NORMAL);
 		}
