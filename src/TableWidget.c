@@ -90,7 +90,7 @@ void TableWidgetData_Init(TableWidgetData *data) {
 	data->selected_row = 1;
 }
 
-void TableWidgetData_HandleInput(TableWidgetData *data, int ch) {
+void TableWidgetData_HandleInput(TableWidgetData *data, int ch, int prev_ch) {
 	switch(ch) {
 		case 'j':
 		case KEY_DOWN:
@@ -101,9 +101,25 @@ void TableWidgetData_HandleInput(TableWidgetData *data, int ch) {
 		case KEY_UP:
 			data->selected_row--;
 			break;
+
+		case 'g':
+			if(prev_ch == 'g') data->selected_row = 1;
+			break;
+
+		case 'G':
+			data->selected_row = data->working_table.nrow;
+			break;
 	}
 
 	LIMIT_VAR(data->selected_row, 1, data->working_table.nrow);
+
+	if(data->selected_row < data->start_row) {
+		data->start_row = data->selected_row;
+	}
+
+	if(data->selected_row > data->start_row + data->height - 2) {
+		data->start_row = data->selected_row - data->height + 2;
+	}
 }
 
 char ** TableWidgetData_GetSelectedRow(const TableWidgetData *data) {

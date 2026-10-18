@@ -126,6 +126,14 @@ static void DB_GetTable(sqlite3 *db, Table *table, const char *fmt, ...) {
 	table->nrow++;
 }
 
+void DB_InsertTestGames(sqlite3 *db) {
+	for(int i = 0; i < 50; i++) {
+		char *name = sqlite3_mprintf("game%02d", i);
+		
+		DB_InsertGame(db, name, NULL, NULL, i + 2000);
+	}
+}
+
 void DB_Connect(sqlite3 **db) {
 	sqlite3_open("data.db", db);
 

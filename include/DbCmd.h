@@ -8,6 +8,8 @@ typedef struct Table {
 	int ncol, nrow;
 } Table;
 
+void DB_InsertTestGames(sqlite3 *db);
+
 void DB_Connect(sqlite3 **db);
 
 void DB_Quit(sqlite3 *db);

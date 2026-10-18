@@ -44,6 +44,8 @@ typedef struct {
 	int start_row;
 	int selected_row;
 
+	int height;
+
 	const char *msg_no_entries;
 
 	const int *col_width_values;
@@ -74,7 +76,7 @@ void Widget_Table(WINDOW *win, const TableWidgetData *data);
 
 void TableWidgetData_Init(TableWidgetData *data);
 
-void TableWidgetData_HandleInput(TableWidgetData *data, int ch);
+void TableWidgetData_HandleInput(TableWidgetData *data, int ch, int prev_ch);
 
 char ** TableWidgetData_GetSelectedRow(const TableWidgetData *data);
 

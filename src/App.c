@@ -81,6 +81,7 @@ static void App_Loop(App *app) {
 	if(app->prev_state != app->current_state) {
 		app->ch = 0;
 		wclear(app->content_window);
+		App_ClearBottomWindow(app);
 		App_InitState(app, app->current_state);
 		App_UpdateState(app, app->current_state);
 		App_RefreshWindows(app);
@@ -95,6 +96,7 @@ static void App_Loop(App *app) {
 void App_Init(App *app) {
 	memset(app, 0, sizeof(App));
 	DB_Connect(&app->db);
+	DB_InsertTestGames(app->db);
 
 	initscr();
 	cbreak();
@@ -107,8 +109,6 @@ void App_Init(App *app) {
 	#define EXPAND_AS_MALLOC(type, state, init, update) app->states[type] = calloc(1, sizeof(state));
 	FOR_STATE_LIST(EXPAND_AS_MALLOC)
 	#undef EXPAND_AS_MALLOC
-	
-	for(int i = 0; i < NUM_STATES; i++) App_InitState(app, i);
 
 	app->quit = 0;
 	app->ch = 0;
@@ -119,7 +119,10 @@ void App_Init(App *app) {
 
 	App_InitState(app, app->current_state);
 	App_HandleResize(app);
-	refresh();
+
+	#define EXPAND_AS_INIT(type, state, init, update) init(app);
+	FOR_STATE_LIST(EXPAND_AS_INIT)
+	#undef EXPAND_AS_MALLOC
 }
 
 void App_Run(App *app) {
