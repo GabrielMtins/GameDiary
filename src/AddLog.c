@@ -214,6 +214,7 @@ void AddLog_Init(App *app) {
 	}
 
 	state->error_msg = NULL;
+	state->form_data.should_clear = true;
 
 	if(app->current_state == STATE_ADDLOG) {
 		FormWidgetData_ResetInput(&state->form_data);

@@ -34,6 +34,8 @@ typedef struct {
 	void (*ok_callback)(void *);
 
 	void *callback_args;
+
+	bool should_clear;
 } FormWidgetData;
 
 typedef struct {

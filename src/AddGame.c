@@ -107,6 +107,7 @@ void AddGame_Init(App *app) {
 
 	if(state->form_data.num_inputs == 0) {
 		FormWidgetData_Init(&state->form_data);
+
 		state->form_data.num_inputs = ADD_GAME_NUM_INPUTS;
 	
 		state->form_data.form_title = "  Write game information.";
@@ -119,6 +120,7 @@ void AddGame_Init(App *app) {
 	}
 
 	state->error_msg = NULL;
+	state->form_data.should_clear = true;
 
 	if(app->current_state == STATE_ADDGAME) {
 		FormWidgetData_ResetInput(&state->form_data);

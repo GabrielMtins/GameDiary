@@ -18,7 +18,6 @@ static void FormWidget_SetUpInputWidget(WINDOW *win, FormWidgetData *data);
 static void FormWidget_HandleInput(FormWidgetData *data, int ch);
 
 static void FormWidget_DrawClear(WINDOW *win, const FormWidgetData *data) {
-	wclear(win);
 	wattrset(win, A_REVERSE);
 
 	{
@@ -126,9 +125,11 @@ static void FormWidget_HandleInput(FormWidgetData *data, int ch) {
 }
 
 void Widget_Form(WINDOW *win, FormWidgetData *data, int ch) {
-	if(ch == KEY_RESIZE) {
+	if(ch == KEY_RESIZE || data->should_clear) {
 		FormWidget_SetUpInputWidget(win, data);
 		FormWidget_DrawClear(win, data);
+		
+		data->should_clear = false;
 	}
 
 	FormWidget_HandleInput(data, ch);
