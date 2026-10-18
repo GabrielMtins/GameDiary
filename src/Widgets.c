@@ -17,8 +17,10 @@ void Widget_Label(WINDOW *win, const char *label, int width) {
 	if(label == NULL) return;
 
 	int len = strlen(label);
+	int maxx = getmaxx(win);
 
 	if(width < 0) width = len;
+	if(width >= maxx) width = maxx - 1;
 
 	for(int i = 0; i < width; i++) {
 		if(i >= len) {

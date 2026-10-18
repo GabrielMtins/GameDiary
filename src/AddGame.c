@@ -34,8 +34,6 @@ static void AddGame_OkCallback(void *args) {
 	AddGameState *state = (AddGameState *) app->states[STATE_ADDGAME];
 	LineWidgetData *inputs = state->form_data.inputs;
 
-	FormWidgetData_AddTerminatorToInputs(&state->form_data);
-
 	if(!AddGame_VerifyInputs(app, state)) {
 		return;
 	}

@@ -22,6 +22,8 @@ void DB_UpdateGame(sqlite3 *db, const char *old_name, const char *name, const ch
 
 void DB_GetGameTable(sqlite3 *db, Table *table);
 
+void DB_SearchGame(sqlite3 *db, Table *table, const char *name);
+
 void DB_InsertLog(sqlite3 *db, const char *name, const char *start_date, const char *end_date, int score);
 
 void DB_DeleteLog(sqlite3 *db, const char *id);

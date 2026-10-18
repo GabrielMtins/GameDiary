@@ -10,12 +10,12 @@
 #define KEY_ESCAPE 27
 
 #define FOR_STATE_LIST(DO) \
-	DO(STATE_CATALOG,    CatalogState, Catalog_Init, Catalog_Update) \
-	DO(STATE_LOGVIEW,    LogViewState, LogView_Init, LogView_Update) \
-	DO(STATE_ADDGAME,    AddGameState, AddGame_Init, AddGame_Update) \
-	DO(STATE_UPDATEGAME, int,          AddGame_Init, AddGame_Update) \
-	DO(STATE_ADDLOG,     AddLogState,  AddLog_Init,  AddLog_Update ) \
-	DO(STATE_UPDATELOG,  int,          AddLog_Init,  AddLog_Update ) \
+	DO(STATE_CATALOG,    CatalogState, Catalog_Init,   Catalog_Update) \
+	DO(STATE_LOGVIEW,    LogViewState, LogView_Init,   LogView_Update) \
+	DO(STATE_ADDGAME,    AddGameState, AddGame_Init,   AddGame_Update) \
+	DO(STATE_UPDATEGAME, int,          AddGame_Init,   AddGame_Update) \
+	DO(STATE_ADDLOG,     AddLogState,  AddLog_Init,    AddLog_Update ) \
+	DO(STATE_UPDATELOG,  int,          AddLog_Init,    AddLog_Update ) \
 	DO(STATE_STATS,      StatsState,   State_NullInit, Stats_Update)   \
 	DO(STATE_MENUBAR,    MenubarState, State_NullInit, Menubar_Update) \
 	DO(STATE_LOGO,       int,          State_NullInit, Logo_Update)
@@ -26,6 +26,7 @@ typedef struct CatalogState {
 	int input_state;
 
 	TableWidgetData table_data;
+	LineWidgetData search_data;
 } CatalogState;
 
 typedef struct {

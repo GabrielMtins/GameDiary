@@ -7,13 +7,10 @@
 #include "App.h"
 
 /* TODO
+ * - search on catalog
+ * - search on logview
  * - estatisticas
  * - help/about
- */
-
-/*
- * As funcoes que possuem uma tag DIRTY no seu comentario é porque mexem
- * com memória e necessitam de verificação de dados. 
  */
 
 int main(void) {

@@ -1,6 +1,7 @@
 #include "DbCmd.h"
 
 #include <stddef.h>
+#include <string.h>
 
 static const char *sql_cmd_create_tables = 
 "CREATE TABLE IF NOT EXISTS GameTable ("
@@ -39,6 +40,10 @@ static const char *sql_cmd_update_game =
 
 static const char *sql_cmd_get_game_table = 
 "SELECT Name, Genre, Platform, Year FROM GameTable ORDER BY Name ASC;"
+;
+
+static const char *sql_cmd_search_game = 
+"SELECT Name, Genre, Platform, Year FROM GameTable WHERE Name LIKE %Q ORDER BY Name ASC;"
 ;
 
 static const char *sql_cmd_insert_log =
@@ -173,9 +178,26 @@ void DB_GetGameTable(sqlite3 *db, Table *table) {
 	DB_GetTable(
 			db,
 			table,
-			"%s",
 			sql_cmd_get_game_table
 			);
+}
+
+void DB_SearchGame(sqlite3 *db, Table *table, const char *name) {
+	if(name[0] == '\0') {
+		DB_GetGameTable(db, table);
+		return;
+	}
+
+	char *tmp = sqlite3_mprintf("%%%s%%", name);
+
+	DB_GetTable(
+			db,
+			table,
+			sql_cmd_search_game,
+			tmp
+			);
+
+	sqlite3_free(tmp);
 }
 
 void DB_InsertLog(sqlite3 *db, const char *name, const char *start_date, const char *end_date, int score) {

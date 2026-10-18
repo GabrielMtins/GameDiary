@@ -1,7 +1,9 @@
 #include "App.h"
+#include <string.h>
 
 enum InputState {
 	CATALOG_INPUT_NAV,
+	CATALOG_INPUT_SEARCH,
 	CATALOG_INPUT_DELETE_CONFIRM
 };
 
@@ -13,14 +15,21 @@ static const int cols_width[] = {
 };
 
 static void Catalog_UpdateTable(App *app, CatalogState *state);
+static void Catalog_DrawStatusBar(App *app, CatalogState *state);
 static void Catalog_DrawDeleteConfirmation(App *app);
+static void Catalog_DrawSearch(App *app, CatalogState *state);
 static void Catalog_DrawTable(App *app, CatalogState *state);
 static void Catalog_HandleInputNav(App *app, CatalogState *state);
+static void Catalog_HandleInputSearch(App *app, CatalogState *state);
 static void Catalog_HandleInputDeleteConfirm(App *app, CatalogState *state);
 static void Catalog_HandleInput(App *app, CatalogState *state);
 
 static void Catalog_UpdateTable(App *app, CatalogState *state) {
-	DB_GetGameTable(app->db, &state->table_data.working_table);
+	DB_SearchGame(
+			app->db,
+			&state->table_data.working_table,
+			state->search_data.str
+			);
 }
 
 static void Catalog_DrawDeleteConfirmation(App *app) {
@@ -32,6 +41,32 @@ static void Catalog_DrawDeleteConfirmation(App *app) {
 	Widget_Space(win, -1);
 }
 
+static void Catalog_DrawStatusBar(App *app, CatalogState *state) {
+	WINDOW *win = app->bottom_window;
+
+	if(state->search_data.len == 0) {
+		App_ClearBottomWindow(app);
+		return;
+	}
+
+	wmove(win, 0, 0);
+	wattrset(win, A_NORMAL);
+	Widget_Label(win, " Filtering by name: ", -1);
+	Widget_Label(win, state->search_data.str, -1);
+	Widget_Space(win, -1);
+}
+
+static void Catalog_DrawSearch(App *app, CatalogState *state) {
+	WINDOW *win = app->bottom_window;
+	
+	wmove(win, 0, 0);
+	wattrset(win, A_NORMAL);
+	Widget_Label(win, " Search: ", -1);
+
+	state->search_data.width = getmaxx(win) - getcurx(win);
+	Widget_InputLine(win, &state->search_data);
+}
+
 static void Catalog_DrawTable(App *app, CatalogState *state) {
 	WINDOW *win;
 
@@ -40,10 +75,18 @@ static void Catalog_DrawTable(App *app, CatalogState *state) {
 	wmove(win, 0, 0);
 	Widget_Table(win, &state->table_data);
 
-	if(state->input_state == CATALOG_INPUT_DELETE_CONFIRM) {
-		Catalog_DrawDeleteConfirmation(app);
-	} else {
-		App_ClearBottomWindow(app);
+	switch(state->input_state) {
+		case CATALOG_INPUT_NAV:
+			Catalog_DrawStatusBar(app, state);
+			break;
+
+		case CATALOG_INPUT_DELETE_CONFIRM:
+			Catalog_DrawDeleteConfirmation(app);
+			break;
+
+		case CATALOG_INPUT_SEARCH:
+			Catalog_DrawSearch(app, state);
+			break;
 	}
 }
 
@@ -82,6 +125,27 @@ static void Catalog_HandleInputNav(App *app, CatalogState *state) {
 					TableWidgetData_GetSelectedRow(&state->table_data)
 					);
 			break;
+
+		case 'f':
+			LineWidgetData_Init(&state->search_data);
+			state->input_state = CATALOG_INPUT_SEARCH;
+			break;
+	}
+}
+
+static void Catalog_HandleInputSearch(App *app, CatalogState *state) {
+	LineWidgetData_HandleInput(&state->search_data, app->ch);
+
+	switch(app->ch) {
+		case KEY_ESCAPE:
+			LineWidgetData_Init(&state->search_data);
+			state->input_state = CATALOG_INPUT_NAV;
+			break;
+
+		case '\n':
+			state->input_state = CATALOG_INPUT_NAV;
+			Catalog_UpdateTable(app, state);
+			break;
 	}
 }
 
@@ -110,6 +174,10 @@ static void Catalog_HandleInput(App *app, CatalogState *state) {
 	switch(state->input_state) {
 		case CATALOG_INPUT_NAV:
 			Catalog_HandleInputNav(app, state);
+			break;
+
+		case CATALOG_INPUT_SEARCH:
+			Catalog_HandleInputSearch(app, state);
 			break;
 
 		case CATALOG_INPUT_DELETE_CONFIRM:

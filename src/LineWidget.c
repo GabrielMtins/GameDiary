@@ -17,6 +17,8 @@ static void LineWidgetData_AddCharacter(LineWidgetData *data, int ch) {
 
 	data->cursor_pos++;
 	data->len++;
+
+	data->str[data->len] = '\0';
 }
 
 static void LineWidgetData_RemoveCharacter(LineWidgetData *data) {
@@ -30,6 +32,8 @@ static void LineWidgetData_RemoveCharacter(LineWidgetData *data) {
 
 	data->len--;
 	data->cursor_pos--;
+
+	data->str[data->len] = '\0';
 }
 
 void Widget_InputLine(WINDOW *win, const LineWidgetData *data) {
