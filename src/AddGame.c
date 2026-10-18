@@ -44,6 +44,7 @@ static void AddGame_OkCallback(void *args) {
 		case STATE_UPDATEGAME:
 			DB_UpdateGame(
 					app->db,
+					state->update_game,
 					inputs[ADDGAME_INPUT_NAME].str,
 					inputs[ADDGAME_INPUT_GENRE].str,
 					inputs[ADDGAME_INPUT_PLATFORM].str,

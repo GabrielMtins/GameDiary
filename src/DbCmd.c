@@ -70,7 +70,7 @@ static const char *sql_cmd_get_log_table =
 ;
 
 static const char *sql_cmd_get_platform_count =
-"SELECT g.Platform as Platforms, COUNT(*) as qt "
+"SELECT g.Platform as Platform, COUNT(*) as qt "
 "FROM (SELECT DISTINCT GameId FROM LogTable) l "
 "INNER JOIN GameTable g on g.id = l.GameId "
 "GROUP BY g.Platform "
@@ -157,14 +157,15 @@ void DB_DeleteGame(sqlite3 *db, const char *name) {
 		   );
 }
 
-void DB_UpdateGame(sqlite3 *db, const char *name, const char *genre, const char *platform, int year) {
+void DB_UpdateGame(sqlite3 *db, const char *old_name, const char *name, const char *genre, const char *platform, int year) {
 	DB_Exec(
 			db,
 			sql_cmd_update_game,
 			name,
 			genre,
 			platform,
-			year
+			year,
+			old_name
 		   );
 }
 

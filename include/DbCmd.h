@@ -18,7 +18,7 @@ void DB_InsertGame(sqlite3 *db, const char *name, const char *genre, const char 
 
 void DB_DeleteGame(sqlite3 *db, const char *name);
 
-void DB_UpdateGame(sqlite3 *db, const char *name, const char *genre, const char *platform, int year);
+void DB_UpdateGame(sqlite3 *db, const char *old_name, const char *name, const char *genre, const char *platform, int year);
 
 void DB_GetGameTable(sqlite3 *db, Table *table);
 

@@ -107,6 +107,8 @@ void App_Init(App *app) {
 	#define EXPAND_AS_MALLOC(type, state, init, update) app->states[type] = calloc(1, sizeof(state));
 	FOR_STATE_LIST(EXPAND_AS_MALLOC)
 	#undef EXPAND_AS_MALLOC
+	
+	for(int i = 0; i < NUM_STATES; i++) App_InitState(app, i);
 
 	app->quit = 0;
 	app->ch = 0;
