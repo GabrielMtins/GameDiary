@@ -11,15 +11,15 @@
 #define KEY_ESCAPE 27
 
 #define FOR_STATE_LIST(DO) \
-	DO(STATE_CATALOG,    CatalogState, Catalog_Update) \
-	DO(STATE_LOGVIEW,    LogViewState, LogView_Update) \
-	DO(STATE_MENUBAR,    MenubarState, Menubar_Update) \
-	DO(STATE_ADDGAME,    AddGameState, AddGame_Update) \
-	DO(STATE_UPDATEGAME, int,          AddGame_Update) \
-	DO(STATE_ADDLOG,     AddLogState,  AddLog_Update ) \
-	DO(STATE_UPDATELOG,  int,          AddLog_Update ) \
-	DO(STATE_STATS,      StatsState,   Stats_Update)   \
-	DO(STATE_LOGO,       int,          Logo_Update)
+	DO(STATE_CATALOG,    CatalogState, Catalog_Init, Catalog_Update) \
+	DO(STATE_LOGVIEW,    LogViewState, State_NullInit, LogView_Update) \
+	DO(STATE_ADDGAME,    AddGameState, State_NullInit, AddGame_Update) \
+	DO(STATE_UPDATEGAME, int,          State_NullInit, AddGame_Update) \
+	DO(STATE_ADDLOG,     AddLogState,  State_NullInit, AddLog_Update ) \
+	DO(STATE_UPDATELOG,  int,          State_NullInit, AddLog_Update ) \
+	DO(STATE_STATS,      StatsState,   State_NullInit, Stats_Update)   \
+	DO(STATE_MENUBAR,    MenubarState, State_NullInit, Menubar_Update) \
+	DO(STATE_LOGO,       int,          State_NullInit, Logo_Update)
 
 #define LIMIT_VAR(x, min_x, max_x) (x = (x < (min_x)) ? (min_x) : ((x >= (max_x)) ? (max_x - 1) : x))
 
@@ -80,7 +80,11 @@ void AddLog_SetGame(App *app, const char *str);
 
 /* ============= MACROS EXPANDING ============= */
 
-#define EXPAND_AS_FUNCTION(type, state, update) void update(App *app);
+#define EXPAND_AS_FUNCTION(type, state, init, update) void init(App *app);
+FOR_STATE_LIST(EXPAND_AS_FUNCTION)
+#undef EXPAND_AS_FUNCTION
+
+#define EXPAND_AS_FUNCTION(type, state, init, update) void update(App *app);
 FOR_STATE_LIST(EXPAND_AS_FUNCTION)
 #undef EXPAND_AS_FUNCTION
 

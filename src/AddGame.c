@@ -47,6 +47,8 @@ static void AddGame_OkCallback(void *args) {
 	AddGameState *state = (AddGameState *) app->states[STATE_ADDGAME];
 	LineWidgetData *inputs = state->form_data.inputs;
 
+	FormWidgetData_AddTerminatorToInputs(&state->form_data);
+
 	if(!AddGame_VerifyInputs(app, state)) {
 		return;
 	}
@@ -58,7 +60,7 @@ static void AddGame_OkCallback(void *args) {
 					inputs[ADDGAME_INPUT_NAME].str,
 					inputs[ADDGAME_INPUT_GENRE].str,
 					inputs[ADDGAME_INPUT_PLATFORM].str,
-					strtol(inputs[ADDGAME_INPUT_YEAR].str, NULL, 10)
+					atoi(inputs[ADDGAME_INPUT_YEAR].str)
 					);
 			break;
 
@@ -68,7 +70,7 @@ static void AddGame_OkCallback(void *args) {
 					inputs[ADDGAME_INPUT_NAME].str,
 					inputs[ADDGAME_INPUT_GENRE].str,
 					inputs[ADDGAME_INPUT_PLATFORM].str,
-					strtol(inputs[ADDGAME_INPUT_YEAR].str, NULL, 10)
+					atoi(inputs[ADDGAME_INPUT_YEAR].str)
 					);
 			break;
 	}

@@ -138,6 +138,14 @@ void Widget_Form(WINDOW *win, FormWidgetData *data, int ch) {
 	FormWidget_DrawButton(win, data);
 }
 
+void FormWidgetData_Init(FormWidgetData *data) {
+	memset(data, 0, sizeof(FormWidgetData));
+
+	for(int i = 0; i < data->num_inputs; i++) {
+		LineWidgetData_Init(&data->inputs[i]);
+	}
+}
+
 void FormWidgetData_ResetInput(FormWidgetData *data) {
 	for(int i = 0; i < data->num_inputs; i++) {
 		data->inputs[i].len = 0;

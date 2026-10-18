@@ -60,6 +60,13 @@ void Widget_InputLine(WINDOW *win, const LineWidgetData *data) {
 	}
 }
 
+void LineWidgetData_Init(LineWidgetData *data) {
+	memset(data, 0, sizeof(LineWidgetData));
+
+	data->bg_attron = A_NORMAL;
+	data->cursor_attron = A_REVERSE;
+}
+
 void LineWidgetData_HandleInput(LineWidgetData *data, int ch) {
 	if(isprint(ch)) {
 		LineWidgetData_AddCharacter(data, ch);

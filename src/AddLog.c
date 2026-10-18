@@ -60,6 +60,8 @@ static void AddLog_OkCallback(void *args) {
 	AddLogState *state = (AddLogState *) app->states[STATE_ADDLOG];
 	LineWidgetData *inputs = state->form_data.inputs;
 
+	FormWidgetData_AddTerminatorToInputs(&state->form_data);
+
 	if(!AddLog_VerifyInputs(app, state)) {
 		return;
 	}

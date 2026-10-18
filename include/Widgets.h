@@ -59,16 +59,22 @@ void Widget_Button(WINDOW *win, const char *label, int width, int selected);
 
 void Widget_InputLine(WINDOW *win, const LineWidgetData *data);
 
+void LineWidgetData_Init(LineWidgetData *data);
+
 /* DIRTY */
 void LineWidgetData_HandleInput(LineWidgetData *data, int ch);
 
 void Widget_Form(WINDOW *win, FormWidgetData *data, int ch);
 
+void FormWidgetData_Init(FormWidgetData *data);
+
 void FormWidgetData_ResetInput(FormWidgetData *data);
 
 void FormWidgetData_AddTerminatorToInputs(FormWidgetData *data);
 
-void Widget_Table(WINDOW *win, TableWidgetData *data);
+void Widget_Table(WINDOW *win, const TableWidgetData *data);
+
+void TableWidgetData_Init(TableWidgetData *data);
 
 void TableWidgetData_HandleInput(TableWidgetData *data, int ch);
 

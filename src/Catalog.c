@@ -21,9 +21,6 @@ static void Catalog_HandleInput(App *app, CatalogState *state);
 
 static void Catalog_UpdateTable(App *app, CatalogState *state) {
 	DB_GetGameTable(app->db, &state->table_data.working_table);
-
-	state->table_data.msg_no_entries = "  There are no games under this category.";
-	state->table_data.col_width_values = cols_width;
 }
 
 static void Catalog_DrawDeleteConfirmation(App *app) {
@@ -121,13 +118,23 @@ static void Catalog_HandleInput(App *app, CatalogState *state) {
 	}
 }
 
+void Catalog_Init(App *app) {
+	CatalogState *state = app->states[STATE_CATALOG];
+
+	state->input_state = CATALOG_INPUT_NAV;
+	
+	TableWidgetData_Init(&state->table_data);
+
+	state->table_data.msg_no_entries = "  There are no games under this category.";
+	state->table_data.col_width_values = cols_width;
+}
+
 void Catalog_Update(App *app) {
 	CatalogState *state = app->states[STATE_CATALOG];
 
 	if(App_IsNewState(app)) {
 		Catalog_UpdateTable(app, state);
 
-		app->content_window.owner_state = STATE_CATALOG;
 		state->input_state = CATALOG_INPUT_NAV;
 	}
 

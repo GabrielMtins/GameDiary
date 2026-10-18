@@ -22,7 +22,7 @@ static void App_HandleResize(App *app) {
 }
 
 static void App_UpdateState(App *app, int state) {
-	#define EXPAND_AS_CASE(type, state, update) case type: update(app); break;
+	#define EXPAND_AS_CASE(type, state, init, update) case type: update(app); break;
 	switch(state) {
 		FOR_STATE_LIST(EXPAND_AS_CASE)
 
@@ -88,9 +88,12 @@ void App_Init(App *app) {
 
 	set_escdelay(25);
 
-	#define EXPAND_AS_MALLOC(type, state, update) app->states[type] = calloc(1, sizeof(state));
+	#define EXPAND_AS_MALLOC(type, state, init, update) app->states[type] = calloc(1, sizeof(state));
 	FOR_STATE_LIST(EXPAND_AS_MALLOC)
 	#undef EXPAND_AS_MALLOC
+
+	#define EXPAND_AS_INIT(type, state, init, update)
+	#undef EXPAND_AS_INIT
 
 	app->quit = 0;
 	app->ch = 0;
@@ -138,6 +141,10 @@ void App_ClearBottomWindow(App *app) {
 
 bool App_IsNewState(App *app) {
 	return app->prev_state != app->current_state;
+}
+
+void State_NullInit(App *app) {
+	(void) app;
 }
 
 void Logo_Update(App *app) {
