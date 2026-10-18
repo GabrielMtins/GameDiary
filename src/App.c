@@ -1,39 +1,16 @@
 #include "App.h"
 
-#include "SqlCmds.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #define LOGO_WINDOW_WIDTH 11
 
-static void App_InitDb(App *app);
 static void App_HandleResize(App *app);
 static void App_UpdateState(App *app, int state);
 static void App_BuildWindow(App *app);
 static void App_RefreshWindows(App *app);
 static void App_Loop(App *app);
-
-static void App_InitDb(App *app) {
-	sqlite3_open("data.db", &app->db);
-
-	sqlite3_exec(
-			app->db,
-			"PRAGMA foreign_keys = ON;",
-			NULL,
-			NULL,
-			NULL
-			);
-
-	sqlite3_exec(
-			app->db,
-			sql_cmd_create_tables,
-			NULL,
-			NULL,
-			NULL
-			);
-}
 
 static void App_HandleResize(App *app) {
 	App_BuildWindow(app);
@@ -101,7 +78,7 @@ static void App_Loop(App *app) {
 
 void App_Init(App *app) {
 	memset(app, 0, sizeof(App));
-	App_InitDb(app);
+	DB_Connect(&app->db);
 
 	initscr();
 	cbreak();

@@ -1,5 +1,4 @@
 #include "App.h"
-#include "SqlCmds.h"
 
 void Stats_Update(App *app) {
 	if(!(App_IsNewState(app) || app->ch == KEY_RESIZE)) {
@@ -23,7 +22,7 @@ void Stats_Update(App *app) {
 
 	memset(&table, 0, sizeof(Table));
 
-	Table_GetSqlTable(&table, app->db, sql_cmd_get_platform_count);
+	DB_GetStatsPlatform(app->db, &table);
 
 	Widget_HorizontalBarGraph(
 			win,
@@ -33,5 +32,5 @@ void Stats_Update(App *app) {
 			4
 			);
 
-	Table_Destroy(&table);
+	DB_DestroyTable(&table);
 }

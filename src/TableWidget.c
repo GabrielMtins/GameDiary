@@ -104,3 +104,9 @@ void TableWidgetData_HandleInput(TableWidgetData *data, int ch) {
 
 	LIMIT_VAR(data->selected_row, 1, data->working_table.nrow);
 }
+
+char ** TableWidgetData_GetSelectedRow(const TableWidgetData *data) {
+	return &data->working_table.str[
+		data->working_table.ncol * data->selected_row
+	];
+}

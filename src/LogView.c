@@ -1,5 +1,4 @@
 #include "App.h"
-#include "SqlCmds.h"
 
 static const int cols_width[] = {
 	0,
@@ -18,16 +17,11 @@ static void LogView_UpdateTable(App *app, LogViewState *state);
 static void LogView_HandleInputNav(App *app, LogViewState *state);
 static void LogView_HandleInputDelete(App *app, LogViewState *state);
 static void LogView_HandleInput(App *app, LogViewState *state);
-static void LogView_HandleDeleteQuery(App *app, LogViewState *state);
 static void LogView_DrawTable(App *app, LogViewState *state);
 static void LogView_DrawDeleteConfirmation(App *app, LogViewState *state);
 
 static void LogView_UpdateTable(App *app, LogViewState *state) {
-	Table_GetSqlTable(
-			&state->table_data.working_table,
-			app->db,
-			sql_cmd_get_log_table
-			);
+	DB_GetLogTable(app->db, &state->table_data.working_table);
 
 	state->table_data.msg_no_entries = "  No diary entries under this category.";
 	state->table_data.col_width_values = cols_width;
@@ -44,12 +38,11 @@ static void LogView_HandleInputNav(App *app, LogViewState *state) {
 	}
 
 	if((app->ch == 'c' || app->ch == 'r') && state->table_data.working_table.nrow > 1) {
-		Table *table = &state->table_data.working_table;
-
 		app->next_state = STATE_UPDATELOG;
+
 		AddLog_SetUpdateData(
 				app,
-				&table->str[table->ncol * state->table_data.selected_row]
+				TableWidgetData_GetSelectedRow(&state->table_data)
 				);
 	}
 }
@@ -65,7 +58,11 @@ static void LogView_HandleInputDelete(App *app, LogViewState *state) {
 		case 'y':
 			state->input_state = LOGVIEW_INPUT_NAV;
 
-			LogView_HandleDeleteQuery(app, state);
+			DB_DeleteLog(
+					app->db,
+					TableWidgetData_GetSelectedRow(&state->table_data)[0]
+					);
+
 			LogView_UpdateTable(app, state);
 			break;
 	}
@@ -81,28 +78,6 @@ static void LogView_HandleInput(App *app, LogViewState *state) {
 			LogView_HandleInputDelete(app, state);
 			break;
 	}
-}
-
-static void LogView_HandleDeleteQuery(App *app, LogViewState *state) {
-	char *cmd;
-	Table *table = &state->table_data.working_table;
-
-	const char *selected_id = table->str[table->ncol * state->table_data.selected_row];
-
-	cmd = sqlite3_mprintf(
-			sql_cmd_delete_log,
-			selected_id
-			);
-
-	sqlite3_exec(
-			app->db,
-			cmd,
-			NULL,
-			NULL,
-			NULL
-			);
-
-	sqlite3_free(cmd);
 }
 
 static void LogView_DrawTable(App *app, LogViewState *state) {

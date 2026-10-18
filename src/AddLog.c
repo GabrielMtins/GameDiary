@@ -1,5 +1,4 @@
 #include "App.h"
-#include "SqlCmds.h"
 #include <ctype.h>
 
 enum AddLogInputEnum {
@@ -24,8 +23,6 @@ static const char *labels[] = {
 };
 
 static void AddLog_SetUpForm(App *app, AddLogState *state);
-static void AddLog_HandleAddQuery(App *app, AddLogState *state);
-static void AddLog_HandleUpdateQuery(App *app, AddLogState *state);
 static bool AddLog_VerifyIfInputIsDate(const LineWidgetData *data);
 static bool AddLog_VerifyInputs(App *app, AddLogState *state);
 static void AddLog_BackToPrevState(App *app);
@@ -45,54 +42,6 @@ static void AddLog_SetUpForm(App *app, AddLogState *state) {
 	state->form_data.ok_callback = AddLog_OkCallback;
 }
 
-static void AddLog_HandleAddQuery(App *app, AddLogState *state) {
-	char *cmd;
-
-	FormWidgetData_AddTerminatorToInputs(&state->form_data);
-
-	cmd = sqlite3_mprintf(
-			sql_cmd_insert_log,
-			state->chosen_game,
-			state->form_data.inputs[0].str,
-			state->form_data.inputs[1].str,
-			strtol(state->form_data.inputs[2].str, NULL, 10)
-			);
-
-	sqlite3_exec(
-			app->db,
-			cmd,
-			NULL,
-			NULL,
-			NULL
-			);
-
-	sqlite3_free(cmd);
-}
-
-static void AddLog_HandleUpdateQuery(App *app, AddLogState *state) {
-	char *cmd;
-
-	FormWidgetData_AddTerminatorToInputs(&state->form_data);
-
-	cmd = sqlite3_mprintf(
-			sql_cmd_update_log,
-			state->form_data.inputs[0].str,
-			state->form_data.inputs[1].str,
-			strtol(state->form_data.inputs[2].str, NULL, 10),
-			state->chosen_game
-			);
-
-	sqlite3_exec(
-			app->db,
-			cmd,
-			NULL,
-			NULL,
-			NULL
-			);
-
-	sqlite3_free(cmd);
-}
-
 static void AddLog_BackToPrevState(App *app) {
 	switch(app->current_state) {
 		case STATE_ADDLOG:
@@ -109,6 +58,7 @@ static void AddLog_OkCallback(void *args) {
 	App *app = (App *) args;
 
 	AddLogState *state = (AddLogState *) app->states[STATE_ADDLOG];
+	LineWidgetData *inputs = state->form_data.inputs;
 
 	if(!AddLog_VerifyInputs(app, state)) {
 		return;
@@ -116,11 +66,23 @@ static void AddLog_OkCallback(void *args) {
 
 	switch(app->current_state) {
 		case STATE_ADDLOG:
-			AddLog_HandleAddQuery(app, state);
+			DB_InsertLog(
+					app->db,
+					state->chosen_game,
+					inputs[ADDLOG_INPUT_STARTDATE].str,
+					inputs[ADDLOG_INPUT_ENDDATE].str,
+					atoi(inputs[ADDLOG_INPUT_SCORE].str)
+					);
 			break;
 
 		case STATE_UPDATELOG:
-			AddLog_HandleUpdateQuery(app, state);
+			DB_UpdateLog(
+					app->db,
+					inputs[ADDLOG_INPUT_STARTDATE].str,
+					inputs[ADDLOG_INPUT_ENDDATE].str,
+					atoi(inputs[ADDLOG_INPUT_SCORE].str),
+					state->chosen_game
+					);
 			break;
 	}
 

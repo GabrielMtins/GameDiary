@@ -1,5 +1,4 @@
 #include "App.h"
-#include "SqlCmds.h"
 
 #include <ctype.h>
 
@@ -23,8 +22,6 @@ static void AddGame_SetUpForm(App *app, AddGameState *state);
 static void AddGame_CancelCallback(void *args);
 static void AddGame_OkCallback(void *args);
 static bool AddGame_VerifyInputs(App *app, AddGameState *state);
-static void AddGame_HandleAddQuery(App *app, AddGameState *state);
-static void AddGame_HandleUpdateQuery(App *app, AddGameState *state);
 static void AddGame_ShowErrorMsg(App *app, AddGameState *state);
 
 static void AddGame_SetUpForm(App *app, AddGameState *state) {
@@ -48,6 +45,7 @@ static void AddGame_CancelCallback(void *args) {
 static void AddGame_OkCallback(void *args) {
 	App *app = (App *) args;
 	AddGameState *state = (AddGameState *) app->states[STATE_ADDGAME];
+	LineWidgetData *inputs = state->form_data.inputs;
 
 	if(!AddGame_VerifyInputs(app, state)) {
 		return;
@@ -55,11 +53,23 @@ static void AddGame_OkCallback(void *args) {
 
 	switch(app->current_state) {
 		case STATE_UPDATEGAME:
-			AddGame_HandleUpdateQuery(app, state);
+			DB_UpdateGame(
+					app->db,
+					inputs[ADDGAME_INPUT_NAME].str,
+					inputs[ADDGAME_INPUT_GENRE].str,
+					inputs[ADDGAME_INPUT_PLATFORM].str,
+					strtol(inputs[ADDGAME_INPUT_YEAR].str, NULL, 10)
+					);
 			break;
 
 		case STATE_ADDGAME:
-			AddGame_HandleAddQuery(app, state);
+			DB_InsertGame(
+					app->db,
+					inputs[ADDGAME_INPUT_NAME].str,
+					inputs[ADDGAME_INPUT_GENRE].str,
+					inputs[ADDGAME_INPUT_PLATFORM].str,
+					strtol(inputs[ADDGAME_INPUT_YEAR].str, NULL, 10)
+					);
 			break;
 	}
 
@@ -88,55 +98,6 @@ static bool AddGame_VerifyInputs(App *app, AddGameState *state) {
 	}
 
 	return true;
-}
-
-static void AddGame_HandleAddQuery(App *app, AddGameState *state) {
-	char *cmd;
-
-	FormWidgetData_AddTerminatorToInputs(&state->form_data);
-
-	cmd = sqlite3_mprintf(
-			sql_cmd_insert_game,
-			state->form_data.inputs[0].str,
-			state->form_data.inputs[1].str,
-			state->form_data.inputs[2].str,
-			strtol(state->form_data.inputs[3].str, NULL, 10)
-			);
-
-	sqlite3_exec(
-			app->db,
-			cmd,
-			NULL,
-			NULL,
-			NULL
-			);
-
-	sqlite3_free(cmd);
-}
-
-static void AddGame_HandleUpdateQuery(App *app, AddGameState *state) {
-	char *cmd;
-
-	FormWidgetData_AddTerminatorToInputs(&state->form_data);
-
-	cmd = sqlite3_mprintf(
-			sql_cmd_update_game,
-			state->form_data.inputs[0].str,
-			state->form_data.inputs[1].str,
-			state->form_data.inputs[2].str,
-			strtol(state->form_data.inputs[3].str, NULL, 10),
-			state->update_game
-			);
-
-	sqlite3_exec(
-			app->db,
-			cmd,
-			NULL,
-			NULL,
-			NULL
-			);
-
-	sqlite3_free(cmd);
 }
 
 static void AddGame_ShowErrorMsg(App *app, AddGameState *state) {

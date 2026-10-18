@@ -3,7 +3,7 @@
 
 #include <curses.h>
 
-#include "Table.h"
+#include "DbCmd.h"
 
 #define MAX_LINE_SIZE 255
 #define FORM_MAX_INPUTS 10
@@ -71,6 +71,8 @@ void FormWidgetData_AddTerminatorToInputs(FormWidgetData *data);
 void Widget_Table(WINDOW *win, TableWidgetData *data);
 
 void TableWidgetData_HandleInput(TableWidgetData *data, int ch);
+
+char ** TableWidgetData_GetSelectedRow(const TableWidgetData *data);
 
 void Widget_HorizontalBarGraph(WINDOW *win, Table *table, int num_rows_graph, int desc_width, int num_width);
 

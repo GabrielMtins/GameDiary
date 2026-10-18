@@ -2,7 +2,6 @@
 #define APP_H
 
 #include "Window.h"
-#include "Table.h"
 #include "Widgets.h"
 #include <sqlite3.h>
 

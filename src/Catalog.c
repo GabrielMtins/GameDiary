@@ -1,5 +1,4 @@
 #include "App.h"
-#include "SqlCmds.h"
 
 enum InputState {
 	CATALOG_INPUT_NAV,
@@ -13,29 +12,15 @@ static const int cols_width[] = {
 	8,
 };
 
-static const char * Catalog_GetSelectedGameName(App *app, CatalogState *state);
 static void Catalog_UpdateTable(App *app, CatalogState *state);
 static void Catalog_DrawDeleteConfirmation(App *app);
 static void Catalog_DrawTable(App *app, CatalogState *state);
 static void Catalog_HandleInputNav(App *app, CatalogState *state);
 static void Catalog_HandleInputDeleteConfirm(App *app, CatalogState *state);
 static void Catalog_HandleInput(App *app, CatalogState *state);
-static void Catalog_HandleDeleteQuery(App *app, CatalogState *state);
-
-static const char * Catalog_GetSelectedGameName(App *app, CatalogState *state) {
-	(void) app;
-
-	return state->table_data.working_table.str[
-		state->table_data.selected_row * state->table_data.working_table.ncol
-	];
-}
 
 static void Catalog_UpdateTable(App *app, CatalogState *state) {
-	Table_GetSqlTable(
-			&state->table_data.working_table,
-			app->db,
-			sql_cmd_get_game_table
-			);
+	DB_GetGameTable(app->db, &state->table_data.working_table);
 
 	state->table_data.msg_no_entries = "  There are no games under this category.";
 	state->table_data.col_width_values = cols_width;
@@ -71,7 +56,6 @@ static void Catalog_HandleInputNav(App *app, CatalogState *state) {
 	Table *table = &state->table_data.working_table;
 	bool is_table_valid = table->nrow > 1;
 
-
 	switch(app->ch) {
 		case 'a':
 			app->next_state = STATE_ADDGAME;
@@ -80,7 +64,7 @@ static void Catalog_HandleInputNav(App *app, CatalogState *state) {
 		case 'i':
 			if(!is_table_valid) break;
 
-			AddLog_SetGame(app, Catalog_GetSelectedGameName(app, state));
+			AddLog_SetGame(app, TableWidgetData_GetSelectedRow(&state->table_data)[0]);
 			app->next_state = STATE_ADDLOG;
 			break;
 
@@ -98,7 +82,7 @@ static void Catalog_HandleInputNav(App *app, CatalogState *state) {
 
 			AddGame_SetUpdateData(
 					app,
-					&table->str[table->ncol * state->table_data.selected_row]
+					TableWidgetData_GetSelectedRow(&state->table_data)
 					);
 			break;
 	}
@@ -115,7 +99,11 @@ static void Catalog_HandleInputDeleteConfirm(App *app, CatalogState *state) {
 		case '\n':
 			state->input_state = CATALOG_INPUT_NAV;
 
-			Catalog_HandleDeleteQuery(app, state);
+			DB_DeleteGame(
+					app->db,
+					TableWidgetData_GetSelectedRow(&state->table_data)[0]
+					);
+
 			Catalog_UpdateTable(app, state);
 			break;
 	}
@@ -131,22 +119,6 @@ static void Catalog_HandleInput(App *app, CatalogState *state) {
 			Catalog_HandleInputDeleteConfirm(app, state);
 			break;
 	}
-}
-
-static void Catalog_HandleDeleteQuery(App *app, CatalogState *state) {
-	char *cmd;
-
-	cmd = sqlite3_mprintf(sql_cmd_delete_game, Catalog_GetSelectedGameName(app, state));
-	
-	sqlite3_exec(
-			app->db,
-			cmd,
-			NULL,
-			NULL,
-			NULL
-			);
-
-	sqlite3_free(cmd);
 }
 
 void Catalog_Update(App *app) {
