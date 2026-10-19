@@ -25,9 +25,7 @@ void Stats_Update(App *app) {
 	Widget_HorizontalBarGraph(
 			win,
 			&table,
-			10,
-			5,
-			4
+			10
 			);
 
 	DB_DestroyTable(&table);

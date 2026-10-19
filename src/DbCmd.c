@@ -96,7 +96,7 @@ static void DB_Exec(sqlite3 *db, const char *fmt, ...);
 static void DB_GetTable(sqlite3 *db, Table *table, const char *fmt, ...);
 
 static char * Util_ConvertDateToSqlFmt(const char *date) {
-	int day, month, year;
+	int day = 0, month = 0, year = 0;
 	sscanf(date, "%d/%d/%d", &day, &month, &year);
 
 	return sqlite3_mprintf("%04d-%02d-%02d", year, month, day);
@@ -138,8 +138,17 @@ static void DB_GetTable(sqlite3 *db, Table *table, const char *fmt, ...) {
 void DB_InsertTestGames(sqlite3 *db, int num_games) {
 	for(int i = 0; i < num_games; i++) {
 		char *name = sqlite3_mprintf("game%02d", i);
+		char *plat = sqlite3_mprintf("plat%02d", i / 5);
 		
-		DB_InsertGame(db, name, NULL, NULL, i + 2000);
+		DB_InsertGame(db, name, NULL, plat, i + 2000);
+		
+		sqlite3_free(name);
+		sqlite3_free(plat);
+	}
+
+	for(int i = 0; i < 5; i++) {
+		//DB_InsertLog(db, "game00", "20/10/2023", NULL, 10);
+		DB_InsertLog(db, "game00", "20/10/2023", "", 10);
 	}
 }
 

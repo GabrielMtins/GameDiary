@@ -90,6 +90,6 @@ void TableWidgetData_HandleInput(TableWidgetData *data, int ch, int prev_ch);
 
 char ** TableWidgetData_GetSelectedRow(const TableWidgetData *data);
 
-void Widget_HorizontalBarGraph(WINDOW *win, Table *table, int num_rows_graph, int desc_width, int num_width);
+void Widget_HorizontalBarGraph(WINDOW *win, Table *table, int num_rows_graph);
 
 #endif
