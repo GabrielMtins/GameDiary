@@ -8,7 +8,6 @@
 
 /* TODO
  * - estatisticas
- * - remover todos os wattrset() e trocar onde der por Style_SetAttr
  * - help/about
  */
 

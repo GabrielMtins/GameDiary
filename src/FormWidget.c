@@ -37,12 +37,11 @@ static void FormWidget_DrawInput(WINDOW *win, FormWidgetData *data) {
 	for(int i = 0; i < data->num_inputs; i++) {
 		wmove(win, form_label_end(i, data->labels_width));
 
-		data->inputs[i].bg_attron = Style_GetAttr(STYLE_FORM_INPUT_BG);
+		data->inputs[i].bg_color = STYLE_FORM_INPUT_BG;
+		data->inputs[i].cursor_color = STYLE_FORM_INPUT_BG;
 
 		if(i == data->input_selected) {
-			data->inputs[i].cursor_attron = Style_GetAttr(STYLE_FORM_INPUT_CURSOR);
-		} else {
-			data->inputs[i].cursor_attron = data->inputs[i].bg_attron;
+			data->inputs[i].cursor_color = STYLE_FORM_INPUT_CURSOR;
 		}
 
 		Widget_InputLine(win, &data->inputs[i]);
@@ -75,7 +74,6 @@ static void FormWidget_DrawButton(WINDOW *win, const FormWidgetData *data) {
 static void FormWidget_SetUpInputWidget(WINDOW *win, FormWidgetData *data) {
 	for(int i = 0; i < data->num_inputs; i++) {
 		data->inputs[i].width = getmaxx(win) - FORM_END_LABEL_X - 2;
-		data->inputs[i].bg_attron = Style_GetAttr(STYLE_FORM_INPUT_BG);
 	}
 }
 

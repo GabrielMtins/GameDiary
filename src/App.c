@@ -148,7 +148,7 @@ void App_ClearBottomWindow(App *app) {
 	WINDOW *win = app->bottom_window;
 
 	wmove(win, 0, 0);
-	wattrset(win, A_REVERSE);
+	Style_SetAttr(win, STYLE_BOTTOM_BAR);
 
 	Widget_Space(win, -1);
 }
@@ -165,7 +165,7 @@ void Logo_Update(App *app) {
 	WINDOW *win = app->logo_window;
 
 	wmove(win, 0, 0);
-	wattrset(win, A_REVERSE);
+	Style_SetAttr(win, STYLE_BOTTOM_BAR);
 
 	Widget_Label(
 			win,

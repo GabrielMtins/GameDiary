@@ -70,7 +70,7 @@ static void AddGame_ShowErrorMsg(App *app, AddGameState *state) {
 	WINDOW *win = app->bottom_window;
 
 	wmove(win, 0, 0);
-	wattrset(win, A_NORMAL);
+	Style_SetAttr(win, STYLE_ERROR_MSG);
 
 	Widget_Space(win, 1);
 	Widget_Label(win, state->error_msg, -1);

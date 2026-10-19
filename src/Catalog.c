@@ -36,7 +36,7 @@ static void Catalog_DrawDeleteConfirmation(App *app) {
 	WINDOW *win = app->bottom_window;
 	
 	wmove(win, 0, 0);
-	wattrset(win, A_NORMAL);
+	Style_SetAttr(win, STYLE_CONFIRM_MSG);
 	Widget_Label(win, " Delete game? Y/n", -1);
 	Widget_Space(win, -1);
 }
@@ -50,7 +50,7 @@ static void Catalog_DrawStatusBar(App *app, CatalogState *state) {
 	}
 
 	wmove(win, 0, 0);
-	wattrset(win, A_NORMAL);
+	Style_SetAttr(win, STYLE_FILTER_MSG);
 	Widget_Label(win, " Filtering by name: ", -1);
 	Widget_Label(win, state->search_data.str, -1);
 	Widget_Space(win, -1);
@@ -60,7 +60,7 @@ static void Catalog_DrawSearch(App *app, CatalogState *state) {
 	WINDOW *win = app->bottom_window;
 	
 	wmove(win, 0, 0);
-	wattrset(win, A_NORMAL);
+	Style_SetAttr(win, STYLE_FILTER_MSG);
 	Widget_Label(win, " Search: ", -1);
 
 	state->search_data.width = getmaxx(win) - getcurx(win);

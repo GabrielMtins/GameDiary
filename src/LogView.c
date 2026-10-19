@@ -98,7 +98,7 @@ static void LogView_DrawDeleteConfirmation(App *app, LogViewState *state) {
 	(void) state;
 	
 	wmove(win, 0, 0);
-	wattrset(win, A_NORMAL);
+	Style_SetAttr(win, STYLE_CONFIRM_MSG);
 	Widget_Label(win, " Delete diary entry? Y/n", -1);
 	Widget_Space(win, -1);
 }

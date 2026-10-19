@@ -9,7 +9,7 @@ void Stats_Update(App *app) {
 	wclear(win);
 	wmove(win, 0, 0);
 
-	wattrset(win, A_REVERSE);
+	Style_SetAttr(win, STYLE_STATS_HEADER);
 	Widget_Space(win, 2);
 	Widget_Label(win, "Most played platforms", -1);
 	Widget_Space(win, -1);

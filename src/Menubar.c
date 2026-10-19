@@ -65,20 +65,22 @@ static void Menubar_HandleInput(App *app, MenubarState *state) {
 static void Menubar_Draw(App *app, MenubarState *state) {
 	WINDOW *win = app->top_window;
 
-	wmove(win, 0, 0);
-	wattrset(win, A_NORMAL);
-	Widget_Space(win, 2);
+	wmove(win, 0, 2);
 
 	for(int i = 0; i < NUM_BUTTONS; i++) {
-		Widget_Button(
+		if(i == state->button_selected) {
+			Style_SetAttr(win, STYLE_MENUBAR_SELECTED);
+		} else {
+			Style_SetAttr(win, STYLE_MENUBAR_OFF);
+		}
+
+		Widget_Label(
 				win,
 				button_labels[i],
-				10,
-				state->button_selected == i
+				10
 				);
 
-		wattrset(win, A_NORMAL);
-		Widget_Space(win, 2);
+		wmove(win, 0, 2 + getcurx(win));
 	}
 }
 

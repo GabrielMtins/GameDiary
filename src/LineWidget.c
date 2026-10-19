@@ -92,7 +92,11 @@ void Widget_InputLine(WINDOW *win, const LineWidgetData *data) {
 	int count;
 
 	for(int i = data->offset; i < data->len; i++) {
-		wattrset(win, (i == data->cursor_pos) ? data->cursor_attron : data->bg_attron);
+		if(i == data->cursor_pos) {
+			Style_SetAttr(win, data->cursor_color);
+		} else {
+			Style_SetAttr(win, data->bg_color);
+		}
 
 		if(i - data->offset >= data->width) {
 			return;
@@ -104,12 +108,12 @@ void Widget_InputLine(WINDOW *win, const LineWidgetData *data) {
 	count = data->len - data->offset;
 
 	if(data->cursor_pos >= data->len) {
-		wattrset(win, data->cursor_attron);
+		Style_SetAttr(win, data->cursor_color);
 		waddch(win, ' ');
 		count++;
 	}
 
-	wattrset(win, data->bg_attron);
+	Style_SetAttr(win, data->bg_color);
 
 	for(; count < data->width; count++) {
 		waddch(win, ' ');
@@ -120,8 +124,8 @@ void LineWidgetData_Init(LineWidgetData *data) {
 	data->len = 0;
 	data->str[0] = '\0';
 
-	data->bg_attron = A_NORMAL;
-	data->cursor_attron = A_REVERSE;
+	data->bg_color = STYLE_FORM_INPUT_BG;
+	data->cursor_color = STYLE_FORM_INPUT_CURSOR;
 }
 
 void LineWidgetData_HandleInput(LineWidgetData *data, int ch) {

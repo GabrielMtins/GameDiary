@@ -22,8 +22,8 @@ typedef struct {
 	int cursor_pos;
 	int width;
 
-	int bg_attron;
-	int cursor_attron;
+	int bg_color;
+	int cursor_color;
 
 	InputType input_type;
 } LineWidgetData;

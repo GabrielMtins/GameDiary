@@ -1,4 +1,5 @@
 #include "Widgets.h"
+#include "App.h"
 
 #include <string.h>
 #include <ctype.h>
@@ -33,9 +34,9 @@ void Widget_Label(WINDOW *win, const char *label, int width) {
 
 void Widget_Button(WINDOW *win, const char *label, int width, int selected) {
 	if(selected) {
-		wattrset(win, A_REVERSE);
+		Style_SetAttr(win, STYLE_BUTTON_SELECTED);
 	} else {
-		wattrset(win, A_REVERSE | A_DIM);
+		Style_SetAttr(win, STYLE_BUTTON_OFF);
 	}
 
 	Widget_Label(win, label, width);
