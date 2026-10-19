@@ -76,6 +76,8 @@ static void LogView_HandleInput(App *app, LogViewState *state) {
 			LogView_HandleInputDelete(app, state);
 			break;
 	}
+
+	TableWidgetData_ApplyLimits(&state->table_data);
 }
 
 static void LogView_DrawTable(App *app, LogViewState *state) {
@@ -106,8 +108,6 @@ void LogView_Init(App *app) {
 
 	state->input_state = LOGVIEW_INPUT_NAV;
 	
-	TableWidgetData_Init(&state->table_data);
-
 	state->table_data.msg_no_entries = "  There are no games under this category.";
 	state->table_data.col_width_values = cols_width;
 	state->table_data.height = getmaxy(app->content_window);
