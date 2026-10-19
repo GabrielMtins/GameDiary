@@ -34,6 +34,8 @@ void DB_UpdateLog(sqlite3 *db, const char *start_date, const char *end_date, int
 
 void DB_GetLogTable(sqlite3 *db, Table *table);
 
+void DB_SearchLog(sqlite3 *db, Table *table, const char *name);
+
 void DB_GetStatsPlatform(sqlite3 *db, Table *table);
 
 #endif

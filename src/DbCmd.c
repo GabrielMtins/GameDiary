@@ -75,6 +75,19 @@ static const char *sql_cmd_get_log_table =
 "ORDER BY l.StartPlayDate DESC;"
 ;
 
+static const char *sql_cmd_search_log =
+"SELECT "
+"l.id as id, "
+"g.Name AS Name," 
+"strftime('%%d/%%m/%%Y', l.StartPlayDate) AS [Start Date],"
+"strftime('%%d/%%m/%%Y', l.EndPlayDate) AS [End Date],"
+"l.Score "
+"FROM GameTable g "
+"INNER JOIN LogTable l on g.id = l.GameId "
+"WHERE g.Name LIKE %Q "
+"ORDER BY l.StartPlayDate DESC;"
+;
+
 static const char *sql_cmd_get_platform_count =
 "SELECT g.Platform as Platform, COUNT(*) as qt "
 "FROM (SELECT DISTINCT GameId FROM LogTable) l "
@@ -209,7 +222,7 @@ void DB_GetGameTable(sqlite3 *db, Table *table) {
 }
 
 void DB_SearchGame(sqlite3 *db, Table *table, const char *name) {
-	if(name[0] == '\0') {
+	if(name == NULL || name[0] == '\0') {
 		DB_GetGameTable(db, table);
 		return;
 	}
@@ -268,6 +281,24 @@ void DB_GetLogTable(sqlite3 *db, Table *table) {
 			table,
 			sql_cmd_get_log_table
 			);
+}
+
+void DB_SearchLog(sqlite3 *db, Table *table, const char *name) {
+	if(name == NULL || name[0] == '\0') {
+		DB_GetLogTable(db, table);
+		return;
+	}
+
+	char *tmp = sqlite3_mprintf("%%%s%%", name);
+
+	DB_GetTable(
+			db,
+			table,
+			sql_cmd_search_log,
+			tmp
+			);
+
+	sqlite3_free(tmp);
 }
 
 void DB_GetStatsPlatform(sqlite3 *db, Table *table) {

@@ -34,6 +34,7 @@ typedef struct {
 	int input_state;
 
 	TableWidgetData table_data;
+	LineWidgetData search_data;
 } LogViewState;
 
 typedef struct MenubarState {

@@ -15,7 +15,7 @@ static const int cols_width[] = {
 };
 
 static void Catalog_UpdateTable(App *app, CatalogState *state);
-static void Catalog_DrawStatusBar(App *app, CatalogState *state);
+static void Catalog_DrawFilterBar(App *app, CatalogState *state);
 static void Catalog_DrawDeleteConfirmation(App *app);
 static void Catalog_DrawSearch(App *app, CatalogState *state);
 static void Catalog_DrawTable(App *app, CatalogState *state);
@@ -41,7 +41,7 @@ static void Catalog_DrawDeleteConfirmation(App *app) {
 	Widget_Space(win, -1);
 }
 
-static void Catalog_DrawStatusBar(App *app, CatalogState *state) {
+static void Catalog_DrawFilterBar(App *app, CatalogState *state) {
 	WINDOW *win = app->bottom_window;
 
 	if(state->search_data.len == 0) {
@@ -60,7 +60,7 @@ static void Catalog_DrawSearch(App *app, CatalogState *state) {
 	WINDOW *win = app->bottom_window;
 	
 	wmove(win, 0, 0);
-	Style_SetAttr(win, STYLE_FILTER_MSG);
+	Style_SetAttr(win, STYLE_SEARCH_BG);
 	Widget_Label(win, " Search: ", -1);
 
 	state->search_data.width = getmaxx(win) - getcurx(win);
@@ -77,7 +77,7 @@ static void Catalog_DrawTable(App *app, CatalogState *state) {
 
 	switch(state->input_state) {
 		case CATALOG_INPUT_NAV:
-			Catalog_DrawStatusBar(app, state);
+			Catalog_DrawFilterBar(app, state);
 			break;
 
 		case CATALOG_INPUT_DELETE_CONFIRM:

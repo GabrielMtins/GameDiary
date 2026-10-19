@@ -11,17 +11,25 @@ static const int cols_width[] = {
 enum InputState {
 	LOGVIEW_INPUT_NAV,
 	LOGVIEW_INPUT_DELETE,
+	LOGVIEW_INPUT_SEARCH,
 };
 
 static void LogView_UpdateTable(App *app, LogViewState *state);
 static void LogView_HandleInputNav(App *app, LogViewState *state);
 static void LogView_HandleInputDelete(App *app, LogViewState *state);
+static void LogView_HandleInputSearch(App *app, LogViewState *state);
 static void LogView_HandleInput(App *app, LogViewState *state);
+static void LogView_DrawFilterBar(App *app, LogViewState *state);
+static void LogView_DrawSearch(App *app, LogViewState *state);
 static void LogView_DrawTable(App *app, LogViewState *state);
 static void LogView_DrawDeleteConfirmation(App *app, LogViewState *state);
 
 static void LogView_UpdateTable(App *app, LogViewState *state) {
-	DB_GetLogTable(app->db, &state->table_data.working_table);
+	DB_SearchLog(
+			app->db,
+			&state->table_data.working_table,
+			state->search_data.str
+			);
 }
 
 static void LogView_HandleInputNav(App *app, LogViewState *state) {
@@ -31,17 +39,29 @@ static void LogView_HandleInputNav(App *app, LogViewState *state) {
 			app->prev_ch
 			);
 
-	if(app->ch == 'd' && state->table_data.working_table.nrow > 1) {
-		state->input_state = LOGVIEW_INPUT_DELETE;
-	}
+	bool is_table_valid = state->table_data.working_table.nrow > 1;
 
-	if((app->ch == 'c' || app->ch == 'r') && state->table_data.working_table.nrow > 1) {
-		app->next_state = STATE_UPDATELOG;
+	switch(app->ch) {
+		case 'd':
+			if(!is_table_valid) break;
+			state->input_state = LOGVIEW_INPUT_DELETE;
+			break;
 
-		AddLog_SetUpdateData(
-				app,
-				TableWidgetData_GetSelectedRow(&state->table_data)
-				);
+		case 'c':
+		case 'r':
+			if(!is_table_valid) break;
+			app->next_state = STATE_UPDATELOG;
+
+			AddLog_SetUpdateData(
+					app,
+					TableWidgetData_GetSelectedRow(&state->table_data)
+					);
+			break;
+
+		case 'f':
+			state->input_state = LOGVIEW_INPUT_SEARCH;
+			LineWidgetData_Init(&state->search_data);
+			break;
 	}
 }
 
@@ -66,6 +86,23 @@ static void LogView_HandleInputDelete(App *app, LogViewState *state) {
 	}
 }
 
+static void LogView_HandleInputSearch(App *app, LogViewState *state) {
+	app->block_menubar = true;
+	LineWidgetData_HandleInput(&state->search_data, app->ch);
+
+	switch(app->ch) {
+		case KEY_ESCAPE:
+			LineWidgetData_Init(&state->search_data);
+			state->input_state = LOGVIEW_INPUT_NAV;
+			break;
+
+		case '\n':
+			state->input_state = LOGVIEW_INPUT_NAV;
+			LogView_UpdateTable(app, state);
+			break;
+	}
+}
+
 static void LogView_HandleInput(App *app, LogViewState *state) {
 	switch(state->input_state) {
 		case LOGVIEW_INPUT_NAV:
@@ -75,9 +112,39 @@ static void LogView_HandleInput(App *app, LogViewState *state) {
 		case LOGVIEW_INPUT_DELETE:
 			LogView_HandleInputDelete(app, state);
 			break;
+
+		case LOGVIEW_INPUT_SEARCH:
+			LogView_HandleInputSearch(app, state);
+			break;
 	}
 
 	TableWidgetData_ApplyLimits(&state->table_data);
+}
+
+static void LogView_DrawFilterBar(App *app, LogViewState *state) {
+	WINDOW *win = app->bottom_window;
+
+	if(state->search_data.len == 0) {
+		App_ClearBottomWindow(app);
+		return;
+	}
+
+	wmove(win, 0, 0);
+	Style_SetAttr(win, STYLE_FILTER_MSG);
+	Widget_Label(win, " Filtering by name: ", -1);
+	Widget_Label(win, state->search_data.str, -1);
+	Widget_Space(win, -1);
+}
+
+static void LogView_DrawSearch(App *app, LogViewState *state) {
+	WINDOW *win = app->bottom_window;
+	
+	wmove(win, 0, 0);
+	Style_SetAttr(win, STYLE_SEARCH_BG);
+	Widget_Label(win, " Search: ", -1);
+
+	state->search_data.width = getmaxx(win) - getcurx(win);
+	Widget_InputLine(win, &state->search_data);
 }
 
 static void LogView_DrawTable(App *app, LogViewState *state) {
@@ -86,10 +153,18 @@ static void LogView_DrawTable(App *app, LogViewState *state) {
 	wmove(win, 0, 0);
 	Widget_Table(win, &state->table_data);
 
-	if(state->input_state == LOGVIEW_INPUT_DELETE) {
-		LogView_DrawDeleteConfirmation(app, state);
-	} else {
-		App_ClearBottomWindow(app);
+	switch(state->input_state) {
+		case LOGVIEW_INPUT_DELETE:
+			LogView_DrawDeleteConfirmation(app, state);
+			break;
+
+		case LOGVIEW_INPUT_NAV:
+			LogView_DrawFilterBar(app, state);
+			break;
+
+		case LOGVIEW_INPUT_SEARCH:
+			LogView_DrawSearch(app, state);
+			break;
 	}
 }
 
@@ -111,6 +186,9 @@ void LogView_Init(App *app) {
 	state->table_data.msg_no_entries = "  There are no games under this category.";
 	state->table_data.col_width_values = cols_width;
 	state->table_data.height = getmaxy(app->content_window);
+
+	state->search_data.bg_color = STYLE_SEARCH_BG;
+	state->search_data.cursor_color = STYLE_SEARCH_CURSOR;
 
 	LogView_UpdateTable(app, state);
 }
