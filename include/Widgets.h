@@ -76,6 +76,8 @@ void Widget_Table(WINDOW *win, const TableWidgetData *data);
 
 void TableWidgetData_Init(TableWidgetData *data);
 
+void TableWidgetData_ApplyLimits(TableWidgetData *data);
+
 void TableWidgetData_HandleInput(TableWidgetData *data, int ch, int prev_ch);
 
 char ** TableWidgetData_GetSelectedRow(const TableWidgetData *data);

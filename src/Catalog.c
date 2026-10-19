@@ -91,8 +91,6 @@ static void Catalog_DrawTable(App *app, CatalogState *state) {
 }
 
 static void Catalog_HandleInputNav(App *app, CatalogState *state) {
-	TableWidgetData_HandleInput(&state->table_data, app->ch, app->prev_ch);
-
 	Table *table = &state->table_data.working_table;
 	bool is_table_valid = table->nrow > 1;
 
@@ -130,7 +128,14 @@ static void Catalog_HandleInputNav(App *app, CatalogState *state) {
 			LineWidgetData_Init(&state->search_data);
 			state->input_state = CATALOG_INPUT_SEARCH;
 			break;
+
+		case KEY_ESCAPE:
+			LineWidgetData_Init(&state->search_data);
+			Catalog_UpdateTable(app, state);
+			break;
 	}
+
+	TableWidgetData_HandleInput(&state->table_data, app->ch, app->prev_ch);
 }
 
 static void Catalog_HandleInputSearch(App *app, CatalogState *state) {
@@ -186,6 +191,8 @@ static void Catalog_HandleInput(App *app, CatalogState *state) {
 			Catalog_HandleInputDeleteConfirm(app, state);
 			break;
 	}
+
+	TableWidgetData_ApplyLimits(&state->table_data);
 }
 
 void Catalog_Init(App *app) {
@@ -193,11 +200,8 @@ void Catalog_Init(App *app) {
 
 	state->input_state = CATALOG_INPUT_NAV;
 	
-	TableWidgetData_Init(&state->table_data);
-
 	state->table_data.msg_no_entries = "  There are no games under this category.";
 	state->table_data.col_width_values = cols_width;
-	//state->table_data.height = getmaxx(app->content_window);
 
 	Catalog_UpdateTable(app, state);
 }

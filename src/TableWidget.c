@@ -18,9 +18,10 @@ static void TableWidgetData_DrawLine(WINDOW *win, const TableWidgetData* data, i
 
 		if(current_col_width == 0) continue;
 
-
-		wmove(win, window_y, count);
-		waddch(win, ACS_VLINE);
+		if(i != 0) {
+			wmove(win, window_y, count);
+			waddch(win, ACS_VLINE);
+		}
 
 		wmove(win, window_y, count + 2);
 
@@ -32,9 +33,6 @@ static void TableWidgetData_DrawLine(WINDOW *win, const TableWidgetData* data, i
 
 		count += current_col_width;
 	}
-
-	wmove(win, window_y, getmaxx(win) - 1);
-	waddch(win, ACS_VLINE);
 }
 
 void Widget_Table(WINDOW *win, const TableWidgetData *data) {
@@ -74,6 +72,10 @@ void Widget_Table(WINDOW *win, const TableWidgetData *data) {
 			wattrset(win, A_NORMAL);
 		}
 
+		if(line == data->working_table.nrow - 1) {
+			wattron(win, A_UNDERLINE);
+		}
+
 		TableWidgetData_DrawLine(
 				win,
 				data,
@@ -88,6 +90,26 @@ void TableWidgetData_Init(TableWidgetData *data) {
 
 	data->start_row = 1;
 	data->selected_row = 1;
+}
+
+void TableWidgetData_ApplyLimits(TableWidgetData *data) {
+	LIMIT_VAR(data->selected_row, 1, data->working_table.nrow);
+
+	if(data->selected_row < data->start_row) {
+		data->start_row = data->selected_row;
+	}
+
+	if(data->selected_row > data->start_row + data->height - 2) {
+		data->start_row = data->selected_row - data->height + 2;
+	}
+
+	if(data->working_table.nrow > data->height) {
+		if(data->start_row + data->height - 1 > data->working_table.nrow) {
+			data->start_row = data->working_table.nrow - data->height + 1;
+		}
+	}
+
+	if(data->start_row < 1) data->start_row = 1;
 }
 
 void TableWidgetData_HandleInput(TableWidgetData *data, int ch, int prev_ch) {
@@ -111,15 +133,7 @@ void TableWidgetData_HandleInput(TableWidgetData *data, int ch, int prev_ch) {
 			break;
 	}
 
-	LIMIT_VAR(data->selected_row, 1, data->working_table.nrow);
-
-	if(data->selected_row < data->start_row) {
-		data->start_row = data->selected_row;
-	}
-
-	if(data->selected_row > data->start_row + data->height - 2) {
-		data->start_row = data->selected_row - data->height + 2;
-	}
+	TableWidgetData_ApplyLimits(data);
 }
 
 char ** TableWidgetData_GetSelectedRow(const TableWidgetData *data) {

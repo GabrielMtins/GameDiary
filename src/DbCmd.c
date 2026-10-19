@@ -126,8 +126,8 @@ static void DB_GetTable(sqlite3 *db, Table *table, const char *fmt, ...) {
 	table->nrow++;
 }
 
-void DB_InsertTestGames(sqlite3 *db) {
-	for(int i = 0; i < 50; i++) {
+void DB_InsertTestGames(sqlite3 *db, int num_games) {
+	for(int i = 0; i < num_games; i++) {
 		char *name = sqlite3_mprintf("game%02d", i);
 		
 		DB_InsertGame(db, name, NULL, NULL, i + 2000);
