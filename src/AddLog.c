@@ -23,6 +23,8 @@ static const char *labels[] = {
 };
 
 static void AddLog_BackToPrevState(App *app);
+static bool AddLog_VerifyDate(const char *date);
+static bool AddLog_VerifyInput(AddLogState *state);
 static void AddLog_OkCallback(void *args);
 static void AddLog_CancelCallback(void *args);
 static void AddLog_ShowErrorMsg(App *app, AddLogState *state);
@@ -39,14 +41,71 @@ static void AddLog_BackToPrevState(App *app) {
 	}
 }
 
+static bool AddLog_VerifyDate(const char *date) {
+	static const int date_len = 10;
+
+	static const int days_per_month[] = {
+		31, 28, 31, 30,
+		31, 30, 31, 31,
+		30, 31, 30, 31
+	};
+
+	int day = 0, month = 0, year = 0;
+
+	if(strlen(date) != date_len) return false;
+
+	sscanf(date, "%d/%d/%d", &day, &month, &year);
+
+	if(month > 12) return false;
+	if(month == 0) return false;
+	if(day == 0) return false;
+	if(year == 0) return false;
+
+	if(month == 2) {
+		if((year % 4 == 0 && (year % 100 != 0)) | (year % 400 == 0)) {
+			if(day > 29) return false;
+		} else {
+			if(day > 28) return false;
+		}
+	} else {
+		if(day > days_per_month[month - 1]) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+static bool AddLog_VerifyInput(AddLogState *state) {
+	LineWidgetData *inputs = state->form_data.inputs;
+
+	if(inputs[ADDLOG_INPUT_STARTDATE].len == 0) {
+		state->error_msg = "Error: Start date is empty.";
+		return false;
+	}
+
+	if(!AddLog_VerifyDate(inputs[ADDLOG_INPUT_STARTDATE].str)) {
+		state->error_msg = "Error: Start date is an invalid date.";
+		return false;
+	}
+
+	if(inputs[ADDLOG_INPUT_ENDDATE].len != 0) {
+		if(!AddLog_VerifyDate(inputs[ADDLOG_INPUT_ENDDATE].str)) {
+			state->error_msg = "Error: End date is an invalid date.";
+			return false;
+		}
+	}
+
+	return true;
+}
+
 static void AddLog_OkCallback(void *args) {
 	App *app = (App *) args;
 
 	AddLogState *state = (AddLogState *) app->states[STATE_ADDLOG];
 	LineWidgetData *inputs = state->form_data.inputs;
 
-	if(inputs[ADDLOG_INPUT_STARTDATE].len == 0) {
-		state->error_msg = "Error: Start date must not be empty.";
+	if(!AddLog_VerifyInput(state)) {
 		return;
 	}
 
@@ -109,18 +168,16 @@ void AddLog_SetUpdateData(App *app, char **data) {
 		}
 
 		strncpy(
+				line_data->str,
 				current_data,
-				data[ADDLOG_UPDATE_STARTDATE + i],
 				MAX_LINE_SIZE 
 			   );
 
-		line_data->len = strlen(current_data);
+		line_data->len = strlen(line_data->str);
 		line_data->cursor_pos = line_data->len + 1;
 	}
 
 	strncpy(state->chosen_game, data[ADDLOG_UPDATE_ID], MAX_LINE_SIZE);
-
-	state->form_data.input_selected = 0;
 }
 
 void AddLog_SetGame(App *app, const char *str) {
@@ -151,7 +208,6 @@ void AddLog_Init(App *app) {
 		state->form_data.callback_args = (void *) app;
 		state->form_data.cancel_callback = AddLog_CancelCallback;
 		state->form_data.ok_callback = AddLog_OkCallback;
-
 
 		LineWidgetData *inputs = state->form_data.inputs;
 

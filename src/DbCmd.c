@@ -265,14 +265,20 @@ void DB_DeleteLog(sqlite3 *db, const char *id) {
 }
 
 void DB_UpdateLog(sqlite3 *db, const char *start_date, const char *end_date, int score, const char *id) {
+	char *conv_start_date = Util_ConvertDateToSqlFmt(start_date);
+	char *conv_end_date = Util_ConvertDateToSqlFmt(end_date);
+
 	DB_Exec(
 			db,
 			sql_cmd_update_log,
-			start_date,
-			end_date,
+			conv_start_date,
+			conv_end_date,
 			score,
 			id
 		   );
+
+	sqlite3_free(conv_start_date);
+	sqlite3_free(conv_end_date);
 }
 
 void DB_GetLogTable(sqlite3 *db, Table *table) {

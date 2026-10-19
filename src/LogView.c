@@ -10,6 +10,7 @@ static const int cols_width[] = {
 
 static void LogView_UpdateTable(App *app, TableManagerState *state);
 static void LogView_DeleteItem(App *app, TableManagerState *state);
+static void LogView_HandleInputNav(App *app, TableManagerState *state);
 
 static void LogView_UpdateTable(App *app, TableManagerState *state) {
 	DB_SearchLog(
@@ -26,6 +27,25 @@ static void LogView_DeleteItem(App *app, TableManagerState *state) {
 			);
 }
 
+static void LogView_HandleInputNav(App *app, TableManagerState *state) {
+	bool is_table_valid = state->table_data.working_table.nrow > 1;
+
+	switch(app->ch) {
+		case 'c':
+		case 'r':
+			if(!is_table_valid) break;
+
+			app->next_state = STATE_UPDATELOG;
+
+			AddLog_SetUpdateData(
+					app,
+					TableWidgetData_GetSelectedRow(&state->table_data)
+					);
+
+			break;
+	}
+}
+
 void LogView_Init(App *app) {
 	TableManagerState *state = app->states[STATE_LOGVIEW];
 
@@ -34,6 +54,7 @@ void LogView_Init(App *app) {
 
 	state->update_table_callback = LogView_UpdateTable;
 	state->delete_item_callback = LogView_DeleteItem;
+	state->input_nav_callback = LogView_HandleInputNav;
 
 	TableManager_Init(app, state);
 }
