@@ -20,7 +20,6 @@ static const char *labels[] = {
 
 static void AddGame_CancelCallback(void *args);
 static void AddGame_OkCallback(void *args);
-static bool AddGame_VerifyInputs(App *app, AddGameState *state);
 static void AddGame_ShowErrorMsg(App *app, AddGameState *state);
 
 static void AddGame_CancelCallback(void *args) {
@@ -34,7 +33,8 @@ static void AddGame_OkCallback(void *args) {
 	AddGameState *state = (AddGameState *) app->states[STATE_ADDGAME];
 	LineWidgetData *inputs = state->form_data.inputs;
 
-	if(!AddGame_VerifyInputs(app, state)) {
+	if(inputs[ADDGAME_INPUT_NAME].len == 0) {
+		state->error_msg = "Error: Game name must not be empty.";
 		return;
 	}
 
@@ -62,30 +62,6 @@ static void AddGame_OkCallback(void *args) {
 	}
 
 	app->next_state = STATE_CATALOG;
-}
-
-static bool AddGame_VerifyInputs(App *app, AddGameState *state) {
-	(void) app;
-
-	const char *str;
-	int len;
-
-	if(state->form_data.inputs[ADDGAME_INPUT_NAME].len == 0) {
-		state->error_msg = "Error: Game name must not be empty.";
-		return false;
-	}
-
-	str = state->form_data.inputs[ADDGAME_INPUT_YEAR].str;
-	len = state->form_data.inputs[ADDGAME_INPUT_YEAR].len;
-
-	for(int i = 0; i < len; i++) {
-		if(!isdigit(str[i])) {
-			state->error_msg = "Error: Year must be a number.";
-			return false;
-		}
-	}
-
-	return true;
 }
 
 static void AddGame_ShowErrorMsg(App *app, AddGameState *state) {
@@ -116,6 +92,10 @@ void AddGame_Init(App *app) {
 		state->form_data.callback_args = (void *) app;
 		state->form_data.cancel_callback = AddGame_CancelCallback;
 		state->form_data.ok_callback = AddGame_OkCallback;
+
+		LineWidgetData *inputs = state->form_data.inputs;
+
+		inputs[ADDGAME_INPUT_YEAR].input_type = INPUT_TYPE_NUMBER;
 	}
 
 	state->error_msg = NULL;

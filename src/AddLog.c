@@ -22,8 +22,6 @@ static const char *labels[] = {
 	" Score: ",
 };
 
-static bool AddLog_VerifyIfInputIsDate(const LineWidgetData *data);
-static bool AddLog_VerifyInputs(App *app, AddLogState *state);
 static void AddLog_BackToPrevState(App *app);
 static void AddLog_OkCallback(void *args);
 static void AddLog_CancelCallback(void *args);
@@ -47,7 +45,8 @@ static void AddLog_OkCallback(void *args) {
 	AddLogState *state = (AddLogState *) app->states[STATE_ADDLOG];
 	LineWidgetData *inputs = state->form_data.inputs;
 
-	if(!AddLog_VerifyInputs(app, state)) {
+	if(inputs[ADDLOG_INPUT_STARTDATE].len == 0) {
+		state->error_msg = "Error: Start date must not be empty.";
 		return;
 	}
 
@@ -74,67 +73,6 @@ static void AddLog_OkCallback(void *args) {
 	}
 
 	AddLog_BackToPrevState(app);
-}
-
-static bool AddLog_VerifyIfInputIsDate(const LineWidgetData *data) {
-	if(data->len == 0) {
-		return true;
-	}
-
-	if(data->len != 10) {
-		return false;
-	}
-
-	if(data->str[2] != '/') return false;
-	if(data->str[5] != '/') return false;
-
-	for(int i = 0; i < data->len; i++) {
-		if(i == 2 || i == 5) continue;
-
-		if(!isdigit(data->str[i])) {
-			return false;
-		}
-	}
-
-	return true;
-}
-
-static bool AddLog_VerifyInputs(App *app, AddLogState *state) {
-	(void) app;
-
-	char *str;
-	int len;
-
-	len = state->form_data.inputs[ADDLOG_INPUT_STARTDATE].len;
-
-	if(len == 0) {
-		state->error_msg = "Error: Start date must not be empty.";
-		return false;
-	}
-
-	state->error_msg = "Error: Date must be on the format xx/xx/xxxx.";
-
-	if(!AddLog_VerifyIfInputIsDate(&state->form_data.inputs[ADDLOG_INPUT_STARTDATE])) {
-		return false;
-	}
-
-	if(!AddLog_VerifyIfInputIsDate(&state->form_data.inputs[ADDLOG_INPUT_ENDDATE])) {
-		return false;
-	}
-
-	str = state->form_data.inputs[ADDLOG_INPUT_SCORE].str;
-	len = state->form_data.inputs[ADDLOG_INPUT_SCORE].len;
-
-	for(int i = 0; i < len; i++) {
-		if(!isdigit(str[i])) {
-			state->error_msg = "Error: Score must be a number.";
-			return false;
-		}
-	}
-
-	state->error_msg = NULL;
-
-	return true;
 }
 
 static void AddLog_CancelCallback(void *args) {
@@ -209,6 +147,13 @@ void AddLog_Init(App *app) {
 		state->form_data.callback_args = (void *) app;
 		state->form_data.cancel_callback = AddLog_CancelCallback;
 		state->form_data.ok_callback = AddLog_OkCallback;
+
+
+		LineWidgetData *inputs = state->form_data.inputs;
+
+		inputs[ADDLOG_INPUT_STARTDATE].input_type = INPUT_TYPE_DATE;
+		inputs[ADDLOG_INPUT_ENDDATE].input_type = INPUT_TYPE_DATE;
+		inputs[ADDLOG_INPUT_SCORE].input_type = INPUT_TYPE_NUMBER;
 	}
 
 	state->error_msg = NULL;

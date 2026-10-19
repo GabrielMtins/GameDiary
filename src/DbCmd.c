@@ -1,5 +1,6 @@
 #include "DbCmd.h"
 
+#include <stdio.h>
 #include <stddef.h>
 #include <string.h>
 
@@ -15,8 +16,8 @@ static const char *sql_cmd_create_tables =
 "CREATE TABLE IF NOT EXISTS LogTable ("
 "id INTEGER PRIMARY KEY,"
 "GameId INTEGER NOT NULL,"
-"StartPlayDate CHAR(10),"
-"EndPlayDate CHAR(10),"
+"StartPlayDate DATE,"
+"EndPlayDate DATE,"
 "Score INTEGER,"
 "FOREIGN KEY (GameId) REFERENCES GameTable(id) "
 "ON DELETE CASCADE "
@@ -66,8 +67,8 @@ static const char *sql_cmd_get_log_table =
 "SELECT "
 "l.id as id, "
 "g.Name AS Name," 
-"l.StartPlayDate AS [Start Date],"
-"l.EndPlayDate AS [End Date],"
+"strftime('%%d/%%m/%%Y', l.StartPlayDate) AS [Start Date],"
+"strftime('%%d/%%m/%%Y', l.EndPlayDate) AS [End Date],"
 "l.Score "
 "FROM GameTable g "
 "INNER JOIN LogTable l on g.id = l.GameId "
@@ -90,8 +91,16 @@ static const char *sql_cmd_get_genre_count =
 "ORDER BY qt DESC;"
 ;
 
+static char * Util_ConvertDateToSqlFmt(const char *date);
 static void DB_Exec(sqlite3 *db, const char *fmt, ...);
 static void DB_GetTable(sqlite3 *db, Table *table, const char *fmt, ...);
+
+static char * Util_ConvertDateToSqlFmt(const char *date) {
+	int day, month, year;
+	sscanf(date, "%d/%d/%d", &day, &month, &year);
+
+	return sqlite3_mprintf("%04d-%02d-%02d", year, month, day);
+}
 
 static void DB_Exec(sqlite3 *db, const char *fmt, ...) {
 	va_list args;
@@ -209,14 +218,20 @@ void DB_SearchGame(sqlite3 *db, Table *table, const char *name) {
 }
 
 void DB_InsertLog(sqlite3 *db, const char *name, const char *start_date, const char *end_date, int score) {
+	char *conv_start_date = Util_ConvertDateToSqlFmt(start_date);
+	char *conv_end_date = Util_ConvertDateToSqlFmt(end_date);
+
 	DB_Exec(
 			db,
 			sql_cmd_insert_log,
 			name,
-			start_date,
-			end_date,
+			conv_start_date,
+			conv_end_date,
 			score
 		   );
+	
+	sqlite3_free(conv_start_date);
+	sqlite3_free(conv_end_date);
 }
 
 void DB_DeleteLog(sqlite3 *db, const char *id) {

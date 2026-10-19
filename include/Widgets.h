@@ -8,6 +8,12 @@
 #define MAX_LINE_SIZE 255
 #define FORM_MAX_INPUTS 10
 
+typedef enum {
+	INPUT_TYPE_TEXT = 0,
+	INPUT_TYPE_NUMBER,
+	INPUT_TYPE_DATE
+} InputType;
+
 typedef struct {
 	char str[MAX_LINE_SIZE + 1];
 	int len;
@@ -18,6 +24,8 @@ typedef struct {
 
 	int bg_attron;
 	int cursor_attron;
+
+	InputType input_type;
 } LineWidgetData;
 
 typedef struct {
