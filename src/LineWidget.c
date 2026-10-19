@@ -123,9 +123,7 @@ void Widget_InputLine(WINDOW *win, const LineWidgetData *data) {
 void LineWidgetData_Init(LineWidgetData *data) {
 	data->len = 0;
 	data->str[0] = '\0';
-
-	data->bg_color = STYLE_FORM_INPUT_BG;
-	data->cursor_color = STYLE_FORM_INPUT_CURSOR;
+	data->cursor_pos = 0;
 }
 
 void LineWidgetData_HandleInput(LineWidgetData *data, int ch) {

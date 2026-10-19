@@ -36,6 +36,11 @@ static void Menubar_HandleInput(App *app, MenubarState *state) {
 		return;
 	}
 
+	if(app->block_menubar) {
+		app->block_menubar = false;
+		return;
+	}
+
 	switch(app->ch) {
 		case 't':
 			if(app->prev_ch != 'g') break;
@@ -53,6 +58,10 @@ static void Menubar_HandleInput(App *app, MenubarState *state) {
 
 		case 'q':
 			app->quit = 1;
+			break;
+
+		default:
+			return;
 			break;
 	}
 

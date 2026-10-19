@@ -139,6 +139,7 @@ static void Catalog_HandleInputNav(App *app, CatalogState *state) {
 }
 
 static void Catalog_HandleInputSearch(App *app, CatalogState *state) {
+	app->block_menubar = true;
 	LineWidgetData_HandleInput(&state->search_data, app->ch);
 
 	switch(app->ch) {
@@ -202,6 +203,9 @@ void Catalog_Init(App *app) {
 	
 	state->table_data.msg_no_entries = "  There are no games under this category.";
 	state->table_data.col_width_values = cols_width;
+
+	state->search_data.bg_color = STYLE_SEARCH_BG;
+	state->search_data.cursor_color = STYLE_SEARCH_CURSOR;
 
 	Catalog_UpdateTable(app, state);
 }

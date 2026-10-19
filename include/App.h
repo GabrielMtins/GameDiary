@@ -110,6 +110,8 @@ struct App {
 	int quit;
 	int prev_ch;
 	int ch;
+
+	bool block_menubar;
 };
 
 #endif

@@ -71,8 +71,8 @@ static void App_Loop(App *app) {
 		App_HandleResize(app);
 	}
 
-	Menubar_Update(app);
 	App_UpdateState(app, app->current_state);
+	Menubar_Update(app);
 	App_RefreshWindows(app);
 
 	app->prev_state = app->current_state;
