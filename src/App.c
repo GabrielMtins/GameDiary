@@ -117,12 +117,12 @@ void App_Init(App *app) {
 	app->current_state = STATE_CATALOG;
 	app->next_state = app->current_state;
 
-	App_InitState(app, app->current_state);
-	App_HandleResize(app);
-
 	#define EXPAND_AS_INIT(type, state, init, update) init(app);
 	FOR_STATE_LIST(EXPAND_AS_INIT)
 	#undef EXPAND_AS_MALLOC
+
+	App_InitState(app, app->current_state);
+	App_HandleResize(app);
 }
 
 void App_Run(App *app) {

@@ -11,17 +11,19 @@
 #define KEY_ESCAPE 27
 
 #define FOR_STATE_LIST(DO) \
-	DO(STATE_CATALOG,    CatalogState, Catalog_Init,   Catalog_Update) \
-	DO(STATE_LOGVIEW,    LogViewState, LogView_Init,   LogView_Update) \
-	DO(STATE_ADDGAME,    AddGameState, AddGame_Init,   AddGame_Update) \
-	DO(STATE_UPDATEGAME, int,          AddGame_Init,   AddGame_Update) \
-	DO(STATE_ADDLOG,     AddLogState,  AddLog_Init,    AddLog_Update ) \
-	DO(STATE_UPDATELOG,  int,          AddLog_Init,    AddLog_Update ) \
-	DO(STATE_STATS,      StatsState,   State_NullInit, Stats_Update)   \
-	DO(STATE_MENUBAR,    MenubarState, State_NullInit, Menubar_Update) \
-	DO(STATE_LOGO,       int,          State_NullInit, Logo_Update)
+	DO(STATE_CATALOG,    CatalogState,      Catalog_Init,      Catalog_Update) \
+	DO(STATE_LOGVIEW,    LogViewState,      LogView_Init,      LogView_Update) \
+	DO(STATE_ADDGAME,    AddGameState,      AddGame_Init,      AddGame_Update) \
+	DO(STATE_UPDATEGAME, int,               AddGame_Init,      AddGame_Update) \
+	DO(STATE_ADDLOG,     AddLogState,       AddLog_Init,       AddLog_Update ) \
+	DO(STATE_UPDATELOG,  int,               AddLog_Init,       AddLog_Update ) \
+	DO(STATE_STATS,      StatsState,        State_NullInit,    Stats_Update)   \
+	DO(STATE_MENUBAR,    MenubarState,      State_NullInit,    Menubar_Update) \
+	DO(STATE_LOGO,       int,               State_NullInit,    Logo_Update)
 
 #define LIMIT_VAR(x, min_x, max_x) (x = (x < (min_x)) ? (min_x) : ((x >= (max_x)) ? (max_x - 1) : x))
+
+typedef struct App App;
 
 typedef struct CatalogState {
 	int input_state;
@@ -36,6 +38,16 @@ typedef struct {
 	TableWidgetData table_data;
 	LineWidgetData search_data;
 } LogViewState;
+
+typedef struct TableManagerState {
+	int input_state;
+
+	TableWidgetData table_data;
+	LineWidgetData search_data;
+
+	void (*update_table_callback)(App *, struct TableManagerState *);
+	void (*delete_item_callback)(App *, struct TableManagerState *);
+} TableManagerState;
 
 typedef struct MenubarState {
 	int button_selected;
@@ -62,8 +74,6 @@ typedef struct {
 	int current_graph;
 } StatsState;
 
-typedef struct App App;
-
 void App_Init(App *app);
 
 void App_Run(App *app);
@@ -79,6 +89,10 @@ void AddGame_SetUpdateData(App *app, char **data);
 void AddLog_SetUpdateData(App *app, char **data);
 
 void AddLog_SetGame(App *app, const char *str);
+
+void TableManager_Init(App *app);
+
+void TableManager_Update(App *app);
 
 /* ============= MACROS EXPANDING ============= */
 
