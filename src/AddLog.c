@@ -100,18 +100,22 @@ void AddLog_SetUpdateData(App *app, char **data) {
 	AddLog_SetGame(app, data[ADDLOG_UPDATE_GAMENAME]);
 
 	for(int i = 0; i < ADDLOG_NUM_INPUTS; i++) {
-		char *str = state->form_data.inputs[i].str;
+		LineWidgetData *line_data = &state->form_data.inputs[i];
+		char *current_data = data[ADDLOG_UPDATE_STARTDATE + i];
+
+		if(current_data == NULL) {
+			LineWidgetData_Init(line_data);
+			continue;
+		}
 
 		strncpy(
-				str,
+				current_data,
 				data[ADDLOG_UPDATE_STARTDATE + i],
 				MAX_LINE_SIZE 
 			   );
 
-		int len = strlen(str);
-
-		state->form_data.inputs[i].len = len;
-		state->form_data.inputs[i].cursor_pos = len + 1;
+		line_data->len = strlen(current_data);
+		line_data->cursor_pos = line_data->len + 1;
 	}
 
 	strncpy(state->chosen_game, data[ADDLOG_UPDATE_ID], MAX_LINE_SIZE);

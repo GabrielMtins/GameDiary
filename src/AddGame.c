@@ -123,10 +123,16 @@ void AddGame_SetUpdateData(App *app, char **data) {
 
 	for(int i = 0; i < ADDGAME_NUM_INPUTS; i++) {
 		LineWidgetData *line_data = &state->form_data.inputs[i];
+		char *current_data = data[i];
+
+		if(current_data == NULL) {
+			LineWidgetData_Init(line_data);
+			continue;
+		}
 
 		strncpy(
 				line_data->str,
-				data[i],
+				current_data,
 				MAX_LINE_SIZE
 				);
 
