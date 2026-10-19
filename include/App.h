@@ -57,8 +57,18 @@ typedef struct AddLogState {
 	const char *error_msg;
 } AddLogState;
 
-typedef struct {
+typedef struct StatsState {
 	int current_graph;
+	int current_year;
+	int input_state;
+
+	Table platform_data;
+	Table genre_data;
+	Table decade_data;
+
+	LineWidgetData search_data;
+
+	bool redraw_graph;
 } StatsState;
 
 void App_Init(App *app);

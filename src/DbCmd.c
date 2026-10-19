@@ -89,7 +89,7 @@ static const char *sql_cmd_search_log =
 ;
 
 static const char *sql_cmd_count_stats =
-"SELECT g.%s as [CurrentStatCount], COUNT(*) as qt "
+"SELECT %s as [CurrentStatCount], COUNT(*) as qt "
 "FROM (SELECT DISTINCT GameId FROM %s) l "
 "INNER JOIN GameTable g on g.id = l.GameId "
 "WHERE CurrentStatCount IS NOT NULL "
@@ -110,7 +110,7 @@ static char * Util_ConvertDateToSqlFmt(const char *date) {
 }
 
 static char * Util_GetLogTableYear(int year) {
-	if(year < 0) {
+	if(year <= 0) {
 		return sqlite3_mprintf("LogTable");
 	}
 
