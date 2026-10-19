@@ -117,6 +117,9 @@ void Widget_InputLine(WINDOW *win, const LineWidgetData *data) {
 }
 
 void LineWidgetData_Init(LineWidgetData *data) {
+	data->len = 0;
+	data->str[0] = '\0';
+
 	data->bg_attron = A_NORMAL;
 	data->cursor_attron = A_REVERSE;
 }

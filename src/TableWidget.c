@@ -18,7 +18,7 @@ static void TableWidgetData_DrawLine(WINDOW *win, const TableWidgetData* data, i
 
 		if(current_col_width == 0) continue;
 
-		if(i != 0) {
+		if(count != 0) {
 			wmove(win, window_y, count);
 			waddch(win, ACS_VLINE);
 		}
@@ -39,7 +39,7 @@ void Widget_Table(WINDOW *win, const TableWidgetData *data) {
 	const int start_y = getcury(win) + 1;
 	const int end_y = getmaxy(win);
 
-	wattrset(win, A_REVERSE);
+	Style_SetAttr(win, STYLE_TABLE_HEADER);
 
 	if(data->working_table.nrow > 1) {
 		/* Draw column names. */
@@ -61,15 +61,15 @@ void Widget_Table(WINDOW *win, const TableWidgetData *data) {
 
 		if(current_row >= data->working_table.nrow) {
 			wmove(win, line, 0);
-			wattrset(win, A_NORMAL);
+			Style_SetAttr(win, STYLE_TABLE_ROW);
 			Widget_Space(win, -1);
 			continue;
 		}
 
 		if(current_row == data->selected_row) {
-			wattrset(win, A_REVERSE | A_BOLD);
+			Style_SetAttr(win, STYLE_TABLE_SELECTED);
 		} else {
-			wattrset(win, A_NORMAL);
+			Style_SetAttr(win, STYLE_TABLE_ROW);
 		}
 
 		if(line == data->working_table.nrow - 1) {

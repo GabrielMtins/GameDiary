@@ -18,13 +18,13 @@ static void FormWidget_SetUpInputWidget(WINDOW *win, FormWidgetData *data);
 static void FormWidget_HandleInput(FormWidgetData *data, int ch);
 
 static void FormWidget_DrawClear(WINDOW *win, const FormWidgetData *data) {
-	wattrset(win, A_REVERSE);
+	Style_SetAttr(win, STYLE_FORM_HEADER);
 
-	{
-		wmove(win, 0, 0);
-		Widget_Label(win, data->form_title, -1);
-		Widget_Space(win, -1);
-	}
+	wmove(win, 0, 0);
+	Widget_Label(win, data->form_title, -1);
+	Widget_Space(win, -1);
+
+	Style_SetAttr(win, STYLE_FORM_LABEL);
 
 	for(int i = 0; i < data->num_inputs; i++) {
 		wmove(win, form_label_start(i));
@@ -34,15 +34,13 @@ static void FormWidget_DrawClear(WINDOW *win, const FormWidgetData *data) {
 }
 
 static void FormWidget_DrawInput(WINDOW *win, FormWidgetData *data) {
-	wattrset(win, A_REVERSE | A_DIM);
-
 	for(int i = 0; i < data->num_inputs; i++) {
 		wmove(win, form_label_end(i, data->labels_width));
 
-		data->inputs[i].bg_attron = A_REVERSE | A_DIM;
+		data->inputs[i].bg_attron = Style_GetAttr(STYLE_FORM_INPUT_BG);
 
 		if(i == data->input_selected) {
-			data->inputs[i].cursor_attron = A_BOLD | A_REVERSE;
+			data->inputs[i].cursor_attron = Style_GetAttr(STYLE_FORM_INPUT_CURSOR);
 		} else {
 			data->inputs[i].cursor_attron = data->inputs[i].bg_attron;
 		}
@@ -77,7 +75,7 @@ static void FormWidget_DrawButton(WINDOW *win, const FormWidgetData *data) {
 static void FormWidget_SetUpInputWidget(WINDOW *win, FormWidgetData *data) {
 	for(int i = 0; i < data->num_inputs; i++) {
 		data->inputs[i].width = getmaxx(win) - FORM_END_LABEL_X - 2;
-		data->inputs[i].bg_attron = A_REVERSE | A_DIM;
+		data->inputs[i].bg_attron = Style_GetAttr(STYLE_FORM_INPUT_BG);
 	}
 }
 

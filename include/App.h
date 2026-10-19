@@ -2,6 +2,7 @@
 #define APP_H
 
 #include "Widgets.h"
+#include "Style.h"
 #include <sqlite3.h>
 
 #include <stdlib.h>
