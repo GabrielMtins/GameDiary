@@ -20,7 +20,7 @@ void Stats_Update(App *app) {
 
 	memset(&table, 0, sizeof(Table));
 
-	DB_GetStatsPlatform(app->db, &table);
+	DB_GetStats(app->db, &table, "Platform", -1);
 
 	Widget_HorizontalBarGraph(
 			win,

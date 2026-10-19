@@ -16,8 +16,8 @@ static const char *sql_cmd_create_tables =
 "CREATE TABLE IF NOT EXISTS LogTable ("
 "id INTEGER PRIMARY KEY,"
 "GameId INTEGER NOT NULL,"
-"StartPlayDate DATE,"
-"EndPlayDate DATE,"
+"StartDate DATE,"
+"EndDate DATE,"
 "Score INTEGER,"
 "FOREIGN KEY (GameId) REFERENCES GameTable(id) "
 "ON DELETE CASCADE "
@@ -48,7 +48,7 @@ static const char *sql_cmd_search_game =
 ;
 
 static const char *sql_cmd_insert_log =
-"INSERT INTO LogTable (GameId, StartPlayDate, EndPlayDate, Score) VALUES "
+"INSERT INTO LogTable (GameId, StartDate, EndDate, Score) VALUES "
 "((SELECT id FROM GameTable Where Name=%Q),"
 "%Q, %Q, %d);"
 ;
@@ -59,7 +59,7 @@ static const char *sql_cmd_delete_log =
 
 static const char *sql_cmd_update_log =
 "UPDATE LogTable "
-"SET StartPlayDate=%Q, EndPlayDate=%Q, Score=%d "
+"SET StartDate=%Q, EndDate=%Q, Score=%d "
 "WHERE id=%s;"
 ;
 
@@ -67,44 +67,38 @@ static const char *sql_cmd_get_log_table =
 "SELECT "
 "l.id as id, "
 "g.Name AS Name," 
-"strftime('%%d/%%m/%%Y', l.StartPlayDate) AS [Start Date],"
-"strftime('%%d/%%m/%%Y', l.EndPlayDate) AS [End Date],"
+"strftime('%%d/%%m/%%Y', l.StartDate) AS [Start Date],"
+"strftime('%%d/%%m/%%Y', l.EndDate) AS [End Date],"
 "l.Score "
 "FROM GameTable g "
 "INNER JOIN LogTable l on g.id = l.GameId "
-"ORDER BY l.StartPlayDate DESC;"
+"ORDER BY l.StartDate DESC;"
 ;
 
 static const char *sql_cmd_search_log =
 "SELECT "
 "l.id as id, "
 "g.Name AS Name," 
-"strftime('%%d/%%m/%%Y', l.StartPlayDate) AS [Start Date],"
-"strftime('%%d/%%m/%%Y', l.EndPlayDate) AS [End Date],"
+"strftime('%%d/%%m/%%Y', l.StartDate) AS [Start Date],"
+"strftime('%%d/%%m/%%Y', l.EndDate) AS [End Date],"
 "l.Score "
 "FROM GameTable g "
 "INNER JOIN LogTable l on g.id = l.GameId "
 "WHERE g.Name LIKE %Q "
-"ORDER BY l.StartPlayDate DESC;"
+"ORDER BY l.StartDate DESC;"
 ;
 
-static const char *sql_cmd_get_platform_count =
-"SELECT g.Platform as Platform, COUNT(*) as qt "
-"FROM (SELECT DISTINCT GameId FROM LogTable) l "
+static const char *sql_cmd_count_stats =
+"SELECT g.%s as [CurrentStatCount], COUNT(*) as qt "
+"FROM (SELECT DISTINCT GameId FROM %s) l "
 "INNER JOIN GameTable g on g.id = l.GameId "
-"GROUP BY g.Platform "
-"ORDER BY qt DESC;"
-;
-
-static const char *sql_cmd_get_genre_count =
-"SELECT g.Genre, COUNT(*) as qt "
-"FROM (SELECT DISTINCT GameId FROM LogTable) l "
-"INNER JOIN GameTable g on g.id = l.GameId "
-"GROUP BY g.Genre "
+"WHERE CurrentStatCount IS NOT NULL "
+"GROUP BY CurrentStatCount "
 "ORDER BY qt DESC;"
 ;
 
 static char * Util_ConvertDateToSqlFmt(const char *date);
+static char * Util_GetLogTableYear(int year);
 static void DB_Exec(sqlite3 *db, const char *fmt, ...);
 static void DB_GetTable(sqlite3 *db, Table *table, const char *fmt, ...);
 
@@ -113,6 +107,18 @@ static char * Util_ConvertDateToSqlFmt(const char *date) {
 	sscanf(date, "%d/%d/%d", &day, &month, &year);
 
 	return sqlite3_mprintf("%04d-%02d-%02d", year, month, day);
+}
+
+static char * Util_GetLogTableYear(int year) {
+	if(year < 0) {
+		return sqlite3_mprintf("LogTable");
+	}
+
+	return sqlite3_mprintf(
+			"LogTable WHERE StartDate >= '%04d-01-01' AND StartDate < '%04d-01-01'",
+			year,
+			year + 1
+			);
 }
 
 static void DB_Exec(sqlite3 *db, const char *fmt, ...) {
@@ -307,10 +313,16 @@ void DB_SearchLog(sqlite3 *db, Table *table, const char *name) {
 	sqlite3_free(tmp);
 }
 
-void DB_GetStatsPlatform(sqlite3 *db, Table *table) {
+void DB_GetStats(sqlite3 *db, Table *table, const char *column, int year) {
+	char *tmp = Util_GetLogTableYear(year);
+
 	DB_GetTable(
 			db,
 			table,
-			sql_cmd_get_platform_count
+			sql_cmd_count_stats,
+			column,
+			tmp
 			);
+
+	sqlite3_free(tmp);
 }

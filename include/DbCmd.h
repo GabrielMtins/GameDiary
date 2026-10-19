@@ -36,6 +36,6 @@ void DB_GetLogTable(sqlite3 *db, Table *table);
 
 void DB_SearchLog(sqlite3 *db, Table *table, const char *name);
 
-void DB_GetStatsPlatform(sqlite3 *db, Table *table);
+void DB_GetStats(sqlite3 *db, Table *table, const char *column, int year);
 
 #endif

@@ -7,7 +7,6 @@
 #include "App.h"
 
 /* TODO
- * - verificar o quao valido é criar uma abstração comum para LogView/Catalog
  * - estatisticas
  * - help/about
  */

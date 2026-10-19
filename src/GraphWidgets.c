@@ -46,7 +46,6 @@ void Widget_HorizontalBarGraph(WINDOW *win, Table *table, int num_rows_graph) {
 	if(num_rows_graph >= table->nrow) {
 		num_rows_graph = table->nrow - 1;
 	}
-
 	int *data = BarGraph_Convert2ndColumnToInteger(table, num_rows_graph);
 	int max_data_size = BarGraph_GetDataMaxValue(data, num_rows_graph);
 	int max_name_len = BarGraph_GetMaxNameLen(table, num_rows_graph);
@@ -75,6 +74,8 @@ void Widget_HorizontalBarGraph(WINDOW *win, Table *table, int num_rows_graph) {
 	for(int i = 0; i < num_rows_graph; i++) {
 		const char *label = table->str[table->ncol * (i + 1)];
 		const char *number = table->str[table->ncol * (i + 1) + 1];
+
+		if(label == NULL) continue;
 
 		int current_y = start_y + i * graph_spacing;
 		int current_width = data[i] * max_graph_width / max_data_size;
