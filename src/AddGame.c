@@ -16,7 +16,7 @@ static const char *labels[] = {
 	" Year:"
 };
 
-#define ADD_GAME_NUM_INPUTS ((int) (sizeof(labels) / sizeof(const char *)))
+#define ADDGAME_NUM_INPUTS ((int) (sizeof(labels) / sizeof(const char *)))
 
 static void AddGame_CancelCallback(void *args);
 static void AddGame_OkCallback(void *args);
@@ -83,7 +83,7 @@ void AddGame_Init(App *app) {
 	if(state->form_data.num_inputs == 0) {
 		FormWidgetData_Init(&state->form_data);
 
-		state->form_data.num_inputs = ADD_GAME_NUM_INPUTS;
+		state->form_data.num_inputs = ADDGAME_NUM_INPUTS;
 	
 		state->form_data.form_title = "  Write game information.";
 		state->form_data.labels = labels;
@@ -119,9 +119,9 @@ void AddGame_Update(App *app) {
 }
 
 void AddGame_SetUpdateData(App *app, char **data) {
-	AddGameState *state = (AddGameState *) app->states[STATE_ADDGAME];
+	AddGameState *state = app->states[STATE_ADDGAME];
 
-	for(int i = 0; i < ADD_GAME_NUM_INPUTS; i++) {
+	for(int i = 0; i < ADDGAME_NUM_INPUTS; i++) {
 		LineWidgetData *line_data = &state->form_data.inputs[i];
 
 		strncpy(

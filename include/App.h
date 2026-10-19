@@ -11,8 +11,8 @@
 #define KEY_ESCAPE 27
 
 #define FOR_STATE_LIST(DO) \
-	DO(STATE_CATALOG,    CatalogState,      Catalog_Init,      Catalog_Update) \
-	DO(STATE_LOGVIEW,    LogViewState,      LogView_Init,      LogView_Update) \
+	DO(STATE_CATALOG,    TableManagerState, Catalog_Init,      Catalog_Update) \
+	DO(STATE_LOGVIEW,    TableManagerState, LogView_Init,      LogView_Update) \
 	DO(STATE_ADDGAME,    AddGameState,      AddGame_Init,      AddGame_Update) \
 	DO(STATE_UPDATEGAME, int,               AddGame_Init,      AddGame_Update) \
 	DO(STATE_ADDLOG,     AddLogState,       AddLog_Init,       AddLog_Update ) \
@@ -25,20 +25,6 @@
 
 typedef struct App App;
 
-typedef struct CatalogState {
-	int input_state;
-
-	TableWidgetData table_data;
-	LineWidgetData search_data;
-} CatalogState;
-
-typedef struct {
-	int input_state;
-
-	TableWidgetData table_data;
-	LineWidgetData search_data;
-} LogViewState;
-
 typedef struct TableManagerState {
 	int input_state;
 
@@ -47,6 +33,7 @@ typedef struct TableManagerState {
 
 	void (*update_table_callback)(App *, struct TableManagerState *);
 	void (*delete_item_callback)(App *, struct TableManagerState *);
+	void (*input_nav_callback)(App *, struct TableManagerState *);
 } TableManagerState;
 
 typedef struct MenubarState {
@@ -90,9 +77,9 @@ void AddLog_SetUpdateData(App *app, char **data);
 
 void AddLog_SetGame(App *app, const char *str);
 
-void TableManager_Init(App *app);
+void TableManager_Init(App *app, TableManagerState *state);
 
-void TableManager_Update(App *app);
+void TableManager_Update(App *app, TableManagerState *state);
 
 /* ============= MACROS EXPANDING ============= */
 

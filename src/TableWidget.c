@@ -137,7 +137,7 @@ void TableWidgetData_HandleInput(TableWidgetData *data, int ch, int prev_ch) {
 }
 
 char ** TableWidgetData_GetSelectedRow(const TableWidgetData *data) {
-	return &data->working_table.str[
+	return &(data->working_table.str[
 		data->working_table.ncol * data->selected_row
-	];
+	]);
 }

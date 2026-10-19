@@ -13,7 +13,7 @@ static void TableManager_HandleInputSearch(App *app, TableManagerState *state);
 static void TableManager_HandleInputDeleteConfirm(App *app, TableManagerState *state);
 static void TableManager_HandleInput(App *app, TableManagerState *state);
 static void TableManager_DrawFilterBar(App *app, TableManagerState *state);
-static void TableManager_DrawDeleteConfirmation(App *app, TableManagerState *state);
+static void TableManager_DrawDeleteConfirmation(App *app);
 static void TableManager_DrawSearch(App *app, TableManagerState *state);
 static void TableManager_DrawTable(App *app, TableManagerState *state);
 
@@ -33,6 +33,10 @@ static void TableManager_HandleInputNav(App *app, TableManagerState *state) {
 	Table *table = &state->table_data.working_table;
 	bool is_table_valid = table->nrow > 1;
 
+	if(state->input_nav_callback != NULL) {
+		state->input_nav_callback(app, state);
+	}
+
 	switch(app->ch) {
 		case 'd':
 			if(!is_table_valid) break;
@@ -50,6 +54,8 @@ static void TableManager_HandleInputNav(App *app, TableManagerState *state) {
 			TableManager_UpdateTable(app, state);
 			break;
 	}
+
+	TableWidgetData_HandleInput(&state->table_data, app->ch, app->prev_ch);
 }
 
 static void TableManager_HandleInputSearch(App *app, TableManagerState *state) {
@@ -80,13 +86,15 @@ static void TableManager_HandleInputDeleteConfirm(App *app, TableManagerState *s
 		case '\n':
 			state->input_state = MANAGER_INPUT_NAV;
 
-			TableManager_UpdateTable(app, state);
 			TableManager_DeleteItem(app, state);
+			TableManager_UpdateTable(app, state);
 			break;
 	}
 }
 
 static void TableManager_HandleInput(App *app, TableManagerState *state) {
+	state->table_data.height = getmaxy(app->content_window);
+
 	switch(state->input_state) {
 		case MANAGER_INPUT_NAV:
 			TableManager_HandleInputNav(app, state);
@@ -100,6 +108,8 @@ static void TableManager_HandleInput(App *app, TableManagerState *state) {
 			TableManager_HandleInputSearch(app, state);
 			break;
 	}
+
+	TableWidgetData_ApplyLimits(&state->table_data);
 }
 
 static void TableManager_DrawFilterBar(App *app, TableManagerState *state) {
@@ -117,12 +127,12 @@ static void TableManager_DrawFilterBar(App *app, TableManagerState *state) {
 	Widget_Space(win, -1);
 }
 
-static void TableManager_DrawDeleteConfirmation(App *app, TableManagerState *state) {
+static void TableManager_DrawDeleteConfirmation(App *app) {
 	WINDOW *win = app->bottom_window;
 	
 	wmove(win, 0, 0);
 	Style_SetAttr(win, STYLE_CONFIRM_MSG);
-	Widget_Label(win, " Delete game? Y/n", -1);
+	Widget_Label(win, " Delete item? Y/n", -1);
 	Widget_Space(win, -1);
 }
 
@@ -149,7 +159,7 @@ static void TableManager_DrawTable(App *app, TableManagerState *state) {
 			break;
 
 		case MANAGER_INPUT_DELETE:
-			TableManager_DrawDeleteConfirmation(app, state);
+			TableManager_DrawDeleteConfirmation(app);
 			break;
 
 		case MANAGER_INPUT_SEARCH:
@@ -158,25 +168,16 @@ static void TableManager_DrawTable(App *app, TableManagerState *state) {
 	}
 }
 
-void TableManager_Init(App *app) {
-	TableManagerState *state = app->states[app->current_state];
-
+void TableManager_Init(App *app, TableManagerState *state) {
 	state->input_state = MANAGER_INPUT_NAV;
 	
-	/*
-	state->table_data.msg_no_entries = "  There are no games under this category.";
-	state->table_data.col_width_values = cols_width;
-	*/
-
 	state->search_data.bg_color = STYLE_SEARCH_BG;
 	state->search_data.cursor_color = STYLE_SEARCH_CURSOR;
 
 	TableManager_UpdateTable(app, state);
 }
 
-void TableManager_Update(App *app) {
-	TableManagerState *state = app->states[app->current_state];
-
+void TableManager_Update(App *app, TableManagerState *state) {
 	TableManager_HandleInput(app, state);
 
 	TableManager_DrawTable(app, state);
