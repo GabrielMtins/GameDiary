@@ -159,3 +159,7 @@ void LineWidgetData_HandleInput(LineWidgetData *data, int ch) {
 		LineWidgetData_ConvertToDate(data);
 	}
 }
+
+void LineWidgetData_ApplyLimit(LineWidgetData *data) {
+	data->str[data->len] = '\0';
+}

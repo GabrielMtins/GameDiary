@@ -112,6 +112,10 @@ static void FormWidget_HandleInput(FormWidgetData *data, int ch) {
 
 	LIMIT_VAR(data->input_selected, 0, data->num_inputs + FORM_WIDGET_NUM_BUTTONS);
 
+	for(int i = 0; i < data->num_inputs; i++) {
+		LineWidgetData_ApplyLimit(&data->inputs[i]);
+	}
+
 	if(data->input_selected < data->num_inputs) {
 		LineWidgetData_HandleInput(
 				&data->inputs[data->input_selected],

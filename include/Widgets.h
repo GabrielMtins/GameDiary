@@ -74,6 +74,8 @@ void LineWidgetData_Init(LineWidgetData *data);
 /* DIRTY */
 void LineWidgetData_HandleInput(LineWidgetData *data, int ch);
 
+void LineWidgetData_ApplyLimit(LineWidgetData *data);
+
 void Widget_Form(WINDOW *win, FormWidgetData *data, int ch);
 
 void FormWidgetData_Init(FormWidgetData *data);
