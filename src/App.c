@@ -103,7 +103,6 @@ static void App_Loop(App *app) {
 void App_Init(App *app) {
 	memset(app, 0, sizeof(App));
 	DB_Connect(&app->db);
-	//DB_InsertTestGames(app->db, 10);
 
 	initscr();
 	
@@ -112,8 +111,8 @@ void App_Init(App *app) {
 	}
 
 	//Style_SetDefaultTheme();
-	//Style_SetCyberdreamTheme();
-	Style_SetCatppuccinTheme();
+	//Style_SetCatppuccinTheme();
+	Style_SetBasicColorTheme();
 
 	cbreak();
 	noecho();
@@ -130,7 +129,7 @@ void App_Init(App *app) {
 	app->ch = 0;
 
 	app->prev_state = STATE_NONE;
-	app->current_state = STATE_STATS;
+	app->current_state = STATE_CATALOG;
 	app->next_state = app->current_state;
 
 	#define EXPAND_AS_INIT(type, state, init, update) init(app);

@@ -82,20 +82,10 @@ static void Stats_DrawGraph(App *app, StatsState *state) {
 	Style_SetAttr(win, STYLE_STATS_HEADER);
 	wmove(win, 0, 0);
 	Widget_Space(win, -1);
-	wmove(win, 0, (getmaxx(win) - strlen(current_label)) / 2);
+	wmove(win, 0, 2);
 	Widget_Label(win, current_label, -1);
-
-	if(state->current_graph > 0) {
-		wmove(win, 0, 1);
-		waddch(win, ACS_LARROW);
-		waddch(win, ACS_HLINE);
-	}
-
-	if(state->current_graph < NUM_TYPE_STATS - 1) {
-		wmove(win, 0, getmaxx(win) - 3);
-		waddch(win, ACS_HLINE);
-		waddch(win, ACS_RARROW);
-	}
+	wmove(win, 0, getmaxx(win) - 5);
+	wprintw(win, "%01d/%01d", state->current_graph + 1, NUM_TYPE_STATS);
 
 	wmove(win, 2, 0);
 

@@ -1,8 +1,10 @@
 #include "DbCmd.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
+#include <sys/stat.h>
 
 static const char *sql_cmd_create_tables = 
 "CREATE TABLE IF NOT EXISTS GameTable ("
@@ -172,10 +174,22 @@ void DB_InsertTestGames(sqlite3 *db, int num_games) {
 }
 
 void DB_Connect(sqlite3 **db) {
-	sqlite3_open("data.db", db);
+	char *home = getenv("HOME");
+	char *directory = sqlite3_mprintf("%s/.gamediary", home);
+	char *db_dir = sqlite3_mprintf("%s/.gamediary/data.db", home);
+	char *backup_dir = sqlite3_mprintf("%s/.gamediary/backup.db", home);
 
+	remove(backup_dir);
+	mkdir(directory, 0755);
+
+	sqlite3_open(db_dir, db);
+
+	DB_Exec(*db, "VACUUM INTO %Q;", backup_dir);
 	DB_Exec(*db, "%s", "PRAGMA foreign_keys = ON;");
 	DB_Exec(*db, "%s", sql_cmd_create_tables);
+
+	sqlite3_free(directory);
+	sqlite3_free(db_dir);
 }
 
 void DB_Quit(sqlite3 *db) {

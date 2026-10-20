@@ -44,7 +44,7 @@ int Style_GetAttr(StyleColor color);
 
 void Style_SetAttr(WINDOW *win, StyleColor color);
 
-void Style_SetCyberdreamTheme(void);
+void Style_SetBasicColorTheme(void);
 
 void Style_SetCatppuccinTheme(void);
 
