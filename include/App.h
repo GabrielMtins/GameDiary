@@ -17,9 +17,10 @@
 	DO(STATE_UPDATEGAME, int,               AddGame_Init,      AddGame_Update) \
 	DO(STATE_ADDLOG,     AddLogState,       AddLog_Init,       AddLog_Update ) \
 	DO(STATE_UPDATELOG,  int,               AddLog_Init,       AddLog_Update ) \
-	DO(STATE_STATS,      StatsState,        State_NullInit,    Stats_Update)   \
+	DO(STATE_STATS,      StatsState,        State_NullInit,    Stats_Update  ) \
 	DO(STATE_MENUBAR,    MenubarState,      State_NullInit,    Menubar_Update) \
-	DO(STATE_LOGO,       int,               State_NullInit,    Logo_Update)
+	DO(STATE_ABOUT,      int,               State_NullInit,    About_Update  ) \
+	DO(STATE_LOGO,       int,               State_NullInit,    Logo_Update   )
 
 #define LIMIT_VAR(x, min_x, max_x) (x = (x < (min_x)) ? (min_x) : ((x >= (max_x)) ? (max_x - 1) : x))
 

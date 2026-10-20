@@ -14,7 +14,7 @@ static const int button_to_state[] = {
 	STATE_CATALOG,
 	STATE_LOGVIEW,
 	STATE_STATS,
-	STATE_NONE,
+	STATE_ABOUT,
 };
 
 static bool Menubar_CheckIfStateIsOfMenubar(App *app);

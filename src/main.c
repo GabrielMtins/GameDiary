@@ -7,8 +7,7 @@
 #include "App.h"
 
 /* TODO
- * - estatisticas
- * - help/about
+ * - colorizar
  */
 
 int main(void) {
