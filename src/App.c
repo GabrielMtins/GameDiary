@@ -17,6 +17,7 @@ static void App_HandleResize(App *app) {
 	App_BuildWindow(app);
 
 	wclear(app->content_window);
+	wclear(app->top_window);
 	Logo_Update(app);
 }
 
@@ -56,6 +57,12 @@ static void App_BuildWindow(App *app) {
 	app->content_window = newwin(height - 2, width, 1, 0);
 	app->logo_window = newwin(1, width, height - 1, 0);
 	app->bottom_window = newwin(1, width - LOGO_WINDOW_WIDTH, height - 1, LOGO_WINDOW_WIDTH);
+
+	int window_bg = ' ' | Style_GetAttr(STYLE_WINDOW_BG);
+	wbkgdset(app->top_window, ' ' | Style_GetAttr(STYLE_MENUBAR_BG));
+	wbkgdset(app->content_window, window_bg);
+	wbkgdset(app->logo_window, window_bg);
+	wbkgdset(app->bottom_window, window_bg);
 }
 
 static void App_RefreshWindows(App *app) {
@@ -99,6 +106,15 @@ void App_Init(App *app) {
 	//DB_InsertTestGames(app->db, 10);
 
 	initscr();
+	
+	if(has_colors()) {
+		start_color();
+	}
+
+	//Style_SetDefaultTheme();
+	//Style_SetCyberdreamTheme();
+	Style_SetCatppuccinTheme();
+
 	cbreak();
 	noecho();
 
@@ -114,7 +130,7 @@ void App_Init(App *app) {
 	app->ch = 0;
 
 	app->prev_state = STATE_NONE;
-	app->current_state = STATE_CATALOG;
+	app->current_state = STATE_STATS;
 	app->next_state = app->current_state;
 
 	#define EXPAND_AS_INIT(type, state, init, update) init(app);
