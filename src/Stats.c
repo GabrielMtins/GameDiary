@@ -102,7 +102,7 @@ static void Stats_DrawGraph(App *app, StatsState *state) {
 	Widget_HorizontalBarGraph(
 			win,
 			current_table,
-			10
+			8
 			);
 }
 
@@ -139,6 +139,8 @@ static void Stats_HandleInputNav(App *app, StatsState *state) {
 }
 
 static void Stats_HandleInputSearch(App *app, StatsState *state) {
+	app->block_menubar = true;
+
 	LineWidgetData_HandleInput(&state->search_data, app->ch);
 
 	switch(app->ch) {

@@ -67,6 +67,7 @@ void Widget_HorizontalBarGraph(WINDOW *win, Table *table, int num_rows_graph) {
 	Style_SetAttr(win, STYLE_HGRAPH_VLINE);
 
 	for(int i = 0; i < graph_height; i++) {
+		if(start_y + i >= getmaxy(win)) break;
 		wmove(win, start_y + i, graph_padding_left);
 		waddch(win, ACS_VLINE);
 	}
@@ -79,6 +80,8 @@ void Widget_HorizontalBarGraph(WINDOW *win, Table *table, int num_rows_graph) {
 
 		int current_y = start_y + i * graph_spacing;
 		int current_width = data[i] * max_graph_width / max_data_size;
+
+		if(current_y >= getmaxy(win)) break;
 
 		wmove(win, current_y, graph_padding_left - strlen(label));
 		Style_SetAttr(win, STYLE_HGRAPH_LABEL);
