@@ -1,7 +1,7 @@
 #ifndef WIDGETS_H
 #define WIDGETS_H
 
-#include <curses.h>
+#include <ncurses.h>
 
 #include "DbCmd.h"
 

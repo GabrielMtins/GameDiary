@@ -1,7 +1,7 @@
 #ifndef STYLE_H
 #define STYLE_H
 
-#include <curses.h>
+#include <ncurses.h>
 
 #define FOR_STYLE_LIST(DO) \
 	DO(STYLE_TABLE_HEADER,      A_REVERSE         ) \
