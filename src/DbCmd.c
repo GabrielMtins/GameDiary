@@ -190,6 +190,7 @@ void DB_Connect(sqlite3 **db) {
 
 	sqlite3_free(directory);
 	sqlite3_free(db_dir);
+	sqlite3_free(backup_dir);
 }
 
 void DB_Quit(sqlite3 *db) {
