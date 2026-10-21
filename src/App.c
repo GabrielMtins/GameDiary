@@ -6,12 +6,27 @@
 
 #define LOGO_WINDOW_WIDTH 11
 
+static void App_ConnectDB(App *app);
 static void App_HandleResize(App *app);
 static void App_InitState(App *app, int state);
 static void App_UpdateState(App *app, int state);
 static void App_BuildWindow(App *app);
 static void App_RefreshWindows(App *app);
 static void App_Loop(App *app);
+
+static void App_ConnectDB(App *app) {
+	const char *home = getenv("HOME");
+
+	if(home == NULL) home = ".";
+
+	char *app_database_filename = sqlite3_mprintf(APP_DATABASE_FILENAME, home);
+	char *app_backup_filename = sqlite3_mprintf(APP_BACKUP_FILENAME, home);
+
+	app->db = DB_Connect(app_database_filename, app_backup_filename);
+
+	sqlite3_free(app_database_filename);
+	sqlite3_free(app_backup_filename);
+}
 
 static void App_HandleResize(App *app) {
 	App_BuildWindow(app);
@@ -113,8 +128,7 @@ void App_Init(App *app) {
 
 	App_Config(app);
 
-	//Style_SetDefaultTheme();
-	//Style_SetCatppuccinTheme();
+	App_ConnectDB(app);
 
 	cbreak();
 	noecho();
@@ -186,7 +200,7 @@ void Logo_Update(App *app) {
 
 	Widget_Label(
 			win,
-			" StateState ",
+			" SaveState ",
 			-1
 			);
 

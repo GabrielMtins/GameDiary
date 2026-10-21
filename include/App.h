@@ -8,7 +8,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define APP_CFG_DIR ".savestate"
+#define APP_CFG_DIR "%s/.savestate"
+#define APP_CFG_FILENAME APP_CFG_DIR "/config.ini"
+#define APP_DATABASE_FILENAME APP_CFG_DIR "/data.db"
+#define APP_BACKUP_FILENAME APP_CFG_DIR "/backup.db"
 
 #define KEY_ESCAPE 27
 
