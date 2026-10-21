@@ -2,7 +2,7 @@
 
 static const char *about_text[] = {
 	"Developed by Gabriel Martins.",
-	"GameDiary is a program for logging game data.",
+	"SaveState is a program for logging game data.",
 	"This is free software distributed under GNU GPL v3 or later."
 };
 

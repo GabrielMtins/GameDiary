@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define APP_CFG_DIR ".gamediary"
+#define APP_CFG_DIR ".savestate"
 
 #define KEY_ESCAPE 27
 

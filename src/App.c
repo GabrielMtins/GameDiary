@@ -186,7 +186,7 @@ void Logo_Update(App *app) {
 
 	Widget_Label(
 			win,
-			" GameDiary ",
+			" StateState ",
 			-1
 			);
 
