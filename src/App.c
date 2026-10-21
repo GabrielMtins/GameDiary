@@ -102,7 +102,6 @@ static void App_Loop(App *app) {
 
 void App_Init(App *app) {
 	memset(app, 0, sizeof(App));
-	DB_Connect(&app->db);
 
 	initscr();
 	
@@ -110,9 +109,12 @@ void App_Init(App *app) {
 		start_color();
 	}
 
+	Style_SetDefaultTheme();
+
+	App_Config(app);
+
 	//Style_SetDefaultTheme();
 	//Style_SetCatppuccinTheme();
-	Style_SetBasicColorTheme();
 
 	cbreak();
 	noecho();

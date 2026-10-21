@@ -10,7 +10,7 @@ typedef struct Table {
 
 void DB_InsertTestGames(sqlite3 *db, int num_games);
 
-void DB_Connect(sqlite3 **db);
+sqlite3 * DB_Connect(const char *filename, const char *backup);
 
 void DB_Quit(sqlite3 *db);
 

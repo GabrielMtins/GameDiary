@@ -5,6 +5,8 @@ project(backlog)
 file(GLOB_RECURSE all_SRCS
 		"${PROJECT_SOURCE_DIR}/src/*.c"
         )
+	
+file(GLOB inih_SRCS "${PROJECT_SOURCE_DIR}/external/inih/ini.c")
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -16,6 +18,7 @@ find_package(Curses REQUIRED)
 # Executável
 add_executable(${PROJECT_NAME}
 	${all_SRCS}
+	${inih_SRCS}
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
@@ -25,6 +28,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 
 target_include_directories(${PROJECT_NAME} PRIVATE
 	include/
+	external/inih/
 	${CURSES_INCLUDE_DIRS}
 	${SQLITE3_INCLUDE_DIRS}
 )

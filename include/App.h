@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define APP_CFG_DIR ".gamediary"
+
 #define KEY_ESCAPE 27
 
 #define FOR_STATE_LIST(DO) \
@@ -71,6 +73,8 @@ typedef struct StatsState {
 
 	bool redraw_graph;
 } StatsState;
+
+void App_Config(App *app);
 
 void App_Init(App *app);
 
