@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(backlog)
+project(SaveState)
 
 file(GLOB_RECURSE all_SRCS
 		"${PROJECT_SOURCE_DIR}/src/*.c"
