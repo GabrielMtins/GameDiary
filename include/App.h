@@ -54,10 +54,11 @@ typedef struct AddGameState {
 	const char *error_msg;
 } AddGameState;
 
+#define MAX_FORM_TITLE_LEN (300)
 typedef struct AddLogState {
 	FormWidgetData form_data;
 
-	char form_title_data[MAX_LINE_SIZE + 1];
+	char form_title_data[MAX_FORM_TITLE_LEN + 1];
 	char chosen_game[MAX_LINE_SIZE + 1];
 
 	const char *error_msg;

@@ -42,7 +42,7 @@ static void AddLog_BackToPrevState(App *app) {
 }
 
 static bool AddLog_VerifyDate(const char *date) {
-	static const int date_len = 10;
+	static const size_t date_len = 10;
 
 	static const int days_per_month[] = {
 		31, 28, 31, 30,
@@ -187,7 +187,7 @@ void AddLog_SetGame(App *app, const char *str) {
 
 	snprintf(
 			state->form_title_data,
-			MAX_LINE_SIZE,
+			MAX_FORM_TITLE_LEN,
 			"  Log game: %s",
 			state->chosen_game
 			);

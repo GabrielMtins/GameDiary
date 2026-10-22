@@ -44,6 +44,9 @@ static void Menubar_HandleInput(App *app, MenubarState *state) {
 	switch(app->ch) {
 		case 't':
 			if(app->prev_ch != 'g') break;
+			state->button_selected++;
+			break;
+
 		case '\t':
 		case 'K':
 			state->button_selected++;
@@ -51,6 +54,9 @@ static void Menubar_HandleInput(App *app, MenubarState *state) {
 
 		case 'T':
 			if(app->prev_ch != 'g') break;
+			state->button_selected--;
+			break;
+
 		case KEY_BTAB:
 		case 'J':
 			state->button_selected--;
