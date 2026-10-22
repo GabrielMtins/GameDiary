@@ -38,6 +38,11 @@ static void AddGame_OkCallback(void *args) {
 		return;
 	}
 
+	if(inputs[ADDGAME_INPUT_YEAR].len == 0) {
+		state->error_msg = "Error: Year must not be empty.";
+		return;
+	}
+
 	switch(app->current_state) {
 		case STATE_UPDATEGAME:
 			DB_UpdateGame(
