@@ -16,7 +16,9 @@ later**.
 **SaveState** depends on C standard library, ncurses, sqlite3 and **inih**
 (which is included as a submodule). To build it, you can use cmake:
 
-```
+```sh
+$ git clone --recursive https://github.com/GabrielMtins/SaveState.git
+$ cd SaveState
 $ cmake -B build -DCMAKE_BUILD_TYPE=Release
 $ cmake --build build
 ```
@@ -28,7 +30,7 @@ commands:
 
 - **J, K, gt, gT, tab, shift+tab**: Navigate between tabs.
 - **a**: Add a new game (when you are in the **Games** tab).
-- **i**: Insert a new log for that game (when you are in the games tab).
+- **i**: Insert a new log for that game (when you are in the **Games** tab).
 - **c**: Change a game entry or a log entry.
 - **f**: Filter a game or log by name. You can also use it on the **Stats** tab
   to filter by year.
@@ -47,7 +49,7 @@ If you press f, you can view statistics for a specific year.
 ## Configuration
 
 The program data and configuration is stored in `~/.savestate`. You can
-configure the program through the file config.ini on the configuration
+configure the program through the file `config.ini` on the configuration
 directory. You can configure the following parameters:
 
 - **colorscheme**: The colorscheme can be `catppuccin`, `default` or
