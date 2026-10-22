@@ -53,7 +53,7 @@ void Style_SetBasicColorTheme(void) {
 		return;
 	}
 
-	Style_InitColor(COLOR_BLACK,  0x10, 0x10, 0x10);
+	Style_InitColor(COLOR_BLACK,  0x16, 0x16, 0x16);
 	Style_InitColor(COLOR_WHITE,  0xe0, 0xe0, 0xe0);
 	Style_InitColor(COLOR_RED,    0xe0, 0x60, 0x60);
 	Style_InitColor(COLOR_GREEN,  0x60, 0xd0, 0x60);
