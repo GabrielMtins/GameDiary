@@ -178,6 +178,8 @@ void AddLog_SetUpdateData(App *app, char **data) {
 	}
 
 	strncpy(state->chosen_game, data[ADDLOG_UPDATE_ID], MAX_LINE_SIZE);
+
+	state->form_data.input_selected = 0;
 }
 
 void AddLog_SetGame(App *app, const char *str) {
