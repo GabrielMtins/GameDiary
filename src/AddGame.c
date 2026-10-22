@@ -63,6 +63,8 @@ static void AddGame_OkCallback(void *args) {
 					inputs[ADDGAME_INPUT_PLATFORM].str,
 					atoi(inputs[ADDGAME_INPUT_YEAR].str)
 					);
+
+			Catalog_SetGameSelected(app, inputs[ADDGAME_INPUT_NAME].str);
 			break;
 	}
 

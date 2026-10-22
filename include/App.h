@@ -90,6 +90,8 @@ void App_ClearBottomWindow(App *app);
 
 bool App_IsNewState(App *app);
 
+void Catalog_SetGameSelected(App *app, const char *game);
+
 void AddGame_SetUpdateData(App *app, char **data);
 
 void AddLog_SetUpdateData(App *app, char **data);

@@ -57,6 +57,24 @@ static void Catalog_HandleInputNav(App *app, TableManagerState *state) {
 	}
 }
 
+void Catalog_SetGameSelected(App *app, const char *game) {
+	TableManagerState *state = app->states[STATE_CATALOG];
+	Catalog_UpdateTable(app, state);
+
+	Table *table = &state->table_data.working_table;
+
+	for(int i = 0; i < table->nrow; i++) {
+		const char *name = table->str[i * table->ncol];
+
+		if(name == NULL) continue;
+
+		if(strcmp(name, game) == 0) {
+			state->table_data.selected_row = i;
+			break;
+		}
+	}
+}
+
 void Catalog_Init(App *app) {
 	TableManagerState *state = app->states[STATE_CATALOG];
 
