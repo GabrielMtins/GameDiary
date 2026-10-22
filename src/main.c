@@ -6,10 +6,6 @@
 
 #include "App.h"
 
-/* TODO
- * - colorizar
- */
-
 int main(void) {
 	App *app;
 

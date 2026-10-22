@@ -124,7 +124,7 @@ void App_Init(App *app) {
 		start_color();
 	}
 
-	Style_SetDefaultTheme();
+	Style_SetCatppuccinTheme();
 
 	App_Config(app);
 
