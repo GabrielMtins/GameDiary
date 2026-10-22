@@ -32,7 +32,8 @@ commands:
 - **c**: Change a game entry or a log entry.
 - **f**: Filter a game or log by name. You can also use it on the **Stats** tab
   to filter by year.
-- **h, j, k, l**: general navigation.
+- **h, j, k, l**: General navigation.
+- **q**: Quit.
 
 The program has three main tabs: **Games**, **Diary** and **Stats**. On the
 **Games** tab, you can view, filter and add games or update game data and
