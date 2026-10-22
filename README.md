@@ -7,6 +7,10 @@ genres, platforms or decades.
 **SaveState** is **free software** and it is distributed under **GNU GPL v3 or
 later**.
 
+![](screenshots/games.png)
+![](screenshots/diary.png)
+![](screenshots/stats.png)
+
 ## Building
 
 **SaveState** depends on C standard library, ncurses, sqlite3 and **inih**
