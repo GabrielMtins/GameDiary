@@ -122,7 +122,7 @@ static void TableManager_DrawFilterBar(App *app, TableManagerState *state) {
 
 	wmove(win, 0, 0);
 	Style_SetAttr(win, STYLE_FILTER_MSG);
-	Widget_Label(win, " Filtering by name: ", -1);
+	Widget_Label(win, " Filtering by: ", -1);
 	Widget_Label(win, state->search_data.str, -1);
 	Widget_Space(win, -1);
 }

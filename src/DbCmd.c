@@ -45,7 +45,9 @@ static const char *sql_cmd_get_game_table =
 ;
 
 static const char *sql_cmd_search_game = 
-"SELECT Name, Genre, Platform, Year FROM GameTable WHERE Name LIKE %Q ORDER BY Name ASC;"
+"SELECT Name, Genre, Platform, Year FROM GameTable "
+"WHERE Name LIKE %Q OR Genre LIKE %Q OR Platform LIKE %Q OR Year Like %Q "
+"ORDER BY Name ASC;"
 ;
 
 static const char *sql_cmd_insert_log =
@@ -238,16 +240,19 @@ void DB_SearchGame(sqlite3 *db, Table *table, const char *name) {
 		return;
 	}
 
-	char *tmp = sqlite3_mprintf("%%%s%%", name);
+	char *like_str = sqlite3_mprintf("%%%s%%", name);
 
 	DB_GetTable(
 			db,
 			table,
 			sql_cmd_search_game,
-			tmp
+			like_str,
+			like_str,
+			like_str,
+			like_str
 			);
 
-	sqlite3_free(tmp);
+	sqlite3_free(like_str);
 }
 
 void DB_InsertLog(sqlite3 *db, const char *name, const char *start_date, const char *end_date, int score) {

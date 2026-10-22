@@ -32,7 +32,7 @@ commands:
 - **a**: Add a new game (when you are in the **Games** tab).
 - **i**: Insert a new log for that game (when you are in the **Games** tab).
 - **c**: Change a game entry or a log entry.
-- **f**: Filter a game or log by name. You can also use it on the **Stats** tab
+- **f**: Filter a game or log. You can also use it on the **Stats** tab
   to filter by year.
 - **h, j, k, l**: General navigation.
 - **q**: Quit.
