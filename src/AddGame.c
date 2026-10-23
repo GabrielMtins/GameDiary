@@ -38,8 +38,8 @@ static void AddGame_OkCallback(void *args) {
 		return;
 	}
 
-	if(inputs[ADDGAME_INPUT_YEAR].len == 0) {
-		state->error_msg = "Error: Year must not be empty.";
+	if(inputs[ADDGAME_INPUT_YEAR].len != 4) {
+		state->error_msg = "Error: Year must be a four digit number.";
 		return;
 	}
 
